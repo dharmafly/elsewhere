@@ -7,13 +7,18 @@ var _ 		= require('underscore')._,
 
 _.mixin( require('underscore.deferred') );
 
+function graphExtended(path) {
+
+}
+
 function graph(path) {
 	var deferred = _.Deferred(),
-		promise  = deferred.promise();
+		promise  = deferred.promise(),
+		rtn = {};
 
 	console.log("Building graph for " + path);
 
-	findMeLinks(path)
+	getLinks(path)
 	.then(function(obj) {
 
 		count = 0;
@@ -30,7 +35,16 @@ function graph(path) {
 
 			rtn = obj;
 			rtn.links = findConfirmedLinkObjects(arguments);
+
+			/*rtn.links.forEach(function(link) {
+				if(!_.include(confirmedLinks, link)) {
+
+				}
+			});*/
+
 			rtn.confirmedLinks = confirmedLinks;
+
+			console.log(confirmedLinks);
 
 			deferred.resolve(rtn);
 
@@ -82,14 +96,14 @@ function buildConnections(paths) {
 
 	paths.forEach(function (url) {
 		if (url.search(new RegExp ('^(http|https)://')) !== -1) {
-			promises.push(findMeLinks(url));
+			promises.push(getLinks(url));
 		}
 	});
 
 	return _.when.apply(_, promises);
 }
 
-function findMeLinks(path) {
+function getLinks(path) {
 	var deferred = _.Deferred(),
 		promise = deferred.promise(),
 		obj = {
