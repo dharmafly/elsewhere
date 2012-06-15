@@ -1,6 +1,6 @@
 var app      = require('http').createServer(handler),
     globals  = require('./globals.js'),
-    graphMod = require('./grapher.js');
+    graphMod = require('./grapher2.js');
 
 function handler(req, res) {
   var rtn = [], grapher;
@@ -19,7 +19,7 @@ function handler(req, res) {
 
   grapher = new graphMod.Grapher();
 
-  grapher.buildGraph('http:/'+req.url).then(function(obj) {
+  grapher.build('http:/'+req.url).then(function(obj) {
     res.writeHead(200, {'Content-Type': 'application/json'});
     res.end(JSON.stringify(obj));
   });
