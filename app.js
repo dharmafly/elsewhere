@@ -1,5 +1,4 @@
 var app      = require('http').createServer(handler),
-    _        = require('underscore')._,
     globals  = require('./globals.js'),
     graphMod = require('./grapher.js');
 
