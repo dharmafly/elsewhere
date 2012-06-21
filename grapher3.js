@@ -123,7 +123,7 @@ Grapher.prototype = {
     var statuses = _.pluck(this.pages, 'status');
 
     return _.all(statuses, function (status) {
-      return status === "fetched";
+      return status === "fetched" || status === "error";
     });
   },
 
@@ -191,7 +191,6 @@ Page.prototype = {
     var self = this;
 
     self.status = "fetching";
-    console.log(self.url);
 
     jsdom.env(self.url, [
       globals.JQUERY_URI
@@ -209,7 +208,6 @@ Page.prototype = {
         self.validate();
         self.grapher.addPages(self.links, self.url);
         self.status = "fetched";
-        console.log(self.url);
 
         callback();
       } else {
