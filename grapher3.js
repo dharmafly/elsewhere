@@ -28,16 +28,17 @@ function removeTrailingSlash (a) {
 function Grapher (url) {
   this.rootUrl   = url;
   this.validUrls = [url];
+  this.pages     = {};
 }
 
 Grapher.prototype = {
   
   constructor: Grapher,
-  pages: {},
   validUrls: [],
 
   build: function (callback) {
     this.pages[this.rootUrl] = new Page(this.rootUrl, this);
+    process.stdout.write('\nfetching ' + this.rootUrl + "\n");
     this.fetchPages(callback);
   },
 
@@ -54,26 +55,40 @@ Grapher.prototype = {
   },
 
   addPages: function (newLinks) {
-    var self = this;
-    /*var existingLinks = _.pluck(this.pages, 'url'),
+    var existingLinks = _.pluck(this.pages, 'url'),
         self          = this,
         notAlreadyUsed;
 
     _.each(newLinks, function (newLink) {
       
-      notAlreadyUsed = _.all(existingLinks, function (existingLink) {
-        return sameUrl(newLink, existingLink);
-      });
-
-      if (notAlreadyUsed) {
-        self.pages[newLink] = new Page(newLink, self);
-      } 
-    });*/
+      if (self.pages[newLink]) {
+        return;
+      } else {
+        alreadyUsed = _.any(existingLinks, function (existingLink) {
+          return sameUrl(newLink, existingLink);
+        });
+        if (!alreadyUsed) {
+          self.pages[newLink] = new Page(newLink, self);
+        } 
+      }
+    });
     
+    /*
+    var self = this,
+        alreadyUsed;
+
     _.each(newLinks, function (newLink) {
       if (!self.pages[newLink]) {
         self.pages[newLink] = new Page(newLink, self);
-      } 
+      }
+    });*/
+  },
+
+  allFetched: function () {
+    var statuses = _.pluck(this.pages, 'status');
+
+    return _.all(statuses, function (status) {
+      return status === "fetched";
     });
   },
 
@@ -83,22 +98,17 @@ Grapher.prototype = {
 
     whenFetched = function () {
       var statuses     = _.pluck(self.pages, 'status'),
-          fetchedCount = 0,
-          allFetched;
-
-      allFetched = _.all(statuses, function (s) {
-        return s === "fetched";
-      });
+          fetchedCount = 0;
 
       _.each(statuses, function (s) {
         fetchedCount += (s === "fetched" ? 1 : 0);
       });
 
-      console.log(self.rootUrl + ': fetched ' + 
-        fetchedCount + '/' + statuses.length);
+      process.stdout.write('fetched ' + 
+        fetchedCount + '/' + statuses.length + " \r");
 
-      if (allFetched) {
-        console.log('fetched all');
+      if (self.allFetched()) {
+        process.stdout.write('\nfetched all for ' + self.rootUrl + "\n");
         callback();
       } else {
         self.fetchPages(callback);
@@ -158,26 +168,20 @@ Page.prototype = {
         });
 
         self.title = window.document.title;
-
         self.resolveFavicon(window);
-
         self.validate();
-
         self.grapher.addPages(self.links);
-
-        /*_.each(self.links, function (link) {
-          if (!self.grapher.pages[link]) self.grapher.pages[link] = new Page(link, self.grapher);
-        });*/
-
         self.status = "fetched";
+
         callback();
       } else {
         self.status = "error";
+        console.log(errors);
         callback();
       }
 
       // release memory used by window object
-      window.close();
+      if (window) window.close();
     });
   },
 
