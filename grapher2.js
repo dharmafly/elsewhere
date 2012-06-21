@@ -2,18 +2,56 @@ var _     = require('underscore')._,
   jsdom   = require('jsdom'),
   globals = require('./globals.js');
 
-_.mixin( require('underscore.deferred') );
+_.mixin(require('underscore.deferred'));
 
+// Used for converting a Node object into something that
+// JSON.stringify can consume.
+function serializeNode (node) {
+  return {
+    url: node.url,
+    links: node.links,
+    traversedUrls: node.traversedUrls,
+    nodes: serializeNodes(node.nodes),
+    valid: node.valid(),
+  };
+}
+
+// Converts all the Nodes in a structure into something
+// that JSON.stringify can consume
+function serializeNodes (nodes) {
+  if (_.isArray(nodes)) {
+    return _.map(nodes, function (node) {
+      return serializeNode(node);
+    });
+  } else {
+    return serializeNode(nodes);
+  }
+}
+
+function sameUrl (url1, url2) {
+
+  // remove www if www is present
+  url1 = removeWWW(url1);
+  url2 = removeWWW(url2);
+
+  // remove trailing slash if one is present
+  url1 = removeTrailingSlash(url1);
+  url2 = removeTrailingSlash(url2);
+
+  return url1 === url2;
+}
+
+function removeWWW (a) {
+  return a.search('www') !== -1 ? a.substring(0,7) + a.substring(11,a.length) : a;
+}
+function removeTrailingSlash (a) {
+  return a[a.length-1] === "/" ? a.substring(0,a.length-1) : a;
+}
+
+// The grapher object; directs the node object(s) to build
+// a graph of a person.
 var Grapher = function () {
   this.nodes;
-};
-
-var Node = function (url) {
-  this.url = url;
-  this.links = [];
-  this.nodes = [];
-  this.traversedUrls = [];
-  this.parent = null;
 };
 
 Grapher.prototype.build = function (url) {
@@ -22,98 +60,122 @@ Grapher.prototype.build = function (url) {
       node     = new Node(url);
 
   node.scan().then(function () {
-    node.createSubnodes();
     node.scanSubnodes().then(function () {
       deferred.resolve(node.generateReturnObject());
     });
   });
+  /*generateNodeStructure(node).then(function () {
+    deferred.resolve(node.generateReturnObject());
+  });*/
+  /*node.scan().then(function () {
+    deferred.resolve(node.generateReturnObject());
+  });*/
+  
+  generateNodeStructure(node)
 
   return promise;
 };
 
-/* make this some cool recursive shit or something / work */
+function generateNodeStructure (node) {
+  var promises = [];
+
+  promises = _.map(node.nodes, function (thisNode) {
+    return node.scan();
+  });
+
+  return _.when.apply(_, promises);
+}
+
+// The node object; represents the rel=me links on a site.
+var Node = function (url) {
+  this.url           = url;
+  this.links         = [];
+  this.nodes         = [];
+  this.traversedUrls = [];
+  this.parent        = null;
+};
+
+Node.prototype.root = function () {
+  return this.parent === null ? this : this.parent.root();
+}
+
+Node.prototype.siblings = function () {
+  var self = this;
+
+  if (self.parent === null) return [];
+
+  return _.filter(self.parent.nodes, function (node) {
+    return node.url !== self.url;
+  });
+}
+
+Node.prototype.valid = function () {
+  var self = this;
+
+  return this.parent === null || 
+    _.include(this.links, this.root().url) ||
+    _.any(this.links, function (link) {
+      return _.any(self.root().nodes, function (node) {
+        return node.url === link && node.valid();
+      });
+    });
+}
+
 Node.prototype.generateReturnObject = function () {
-  var self = this,
-      rtn  = {url:self.url,nodes:[]},
-      buildRtnObjs;
-
-  buildRtnObjs = function (node) {
-
-  };
-
-  buildRtnObjs(self);
-
-  return rtn;
+  return serializeNodes(this);
 }
 
 Node.prototype.compactSubnodes = function () {
-  var prunedNodes = [];
-
-  _.each(this.nodes, function (node) {
-    if (node.links.length > 0) {
-      prunedNodes.push(node);
-    }
+  this.nodes = _.filter(this.nodes, function (node) {
+    return node.links.length > 0;
   });
-
-  this.nodes = prunedNodes;
 }
 
 Node.prototype.scanSubnodes = function () {
-  var promises = [],
-      self     = this,
-      master;
-
-  this.nodes.forEach(function (node) {
-    promises.push(node.scan());
+  var promises = _.map(this.nodes, function (node) {
+    return node.scan();
   });
 
-  master = _.when.apply(_, promises);
-
-  // prune all of the traversed links where no
-  // links where found before returning it.
-
-  return master
-  .pipe(function () {
-    var deferred = _.Deferred(),
-        promise  = deferred.promise();
-
-    self.compactSubnodes();
-
-    deferred.resolve();
-
-    return promise;
-  });
+  return _.when.apply(_, promises)
 };
 
 Node.prototype.createSubnodes = function () {
   var self = this;
 
   this.links.forEach(function (link) {
-    var subnode = new Node(link);
-    subnode.parent = self;
-    self.nodes.push(subnode);
+    if (!self.alreadyScanned(link)) {
+      var subnode = new Node(link);
+      subnode.parent = self;
+      self.nodes.push(subnode);
+    }
   });
 };
+
+Node.prototype.alreadyScanned = function (url) {
+  return sameUrl(url, this.url) || 
+    _.any(this.root().traversedUrls, function (thisUrl) {
+      return sameUrl(thisUrl, url);
+    });
+}
 
 Node.prototype.scan = function () {
   var deferred = _.Deferred(),
       promise  = deferred.promise(),
       self     = this;
 
+  this.root().traversedUrls.push(self.url);
+
   jsdom.env(self.url, [
     globals.JQUERY_URI
   ],
   function(errors, window) {
     if (!errors) {
-      window.$("a").each(function (i, val) {
-        if (window.$(val).attr('rel').search('me') !== -1) {
-          var href = window.$(val).attr('href');
-
-          if (href !== '/') {
-            self.links.push(href);
-          }
+      window.$("a[rel~=me]").each(function (i, elem) {
+        if (elem.href.substring(0,1) !== '/') {
+          self.links.push(elem.href);
         }
       });
+      self.createSubnodes();
       deferred.resolve(self);
       console.log("Scanned " + self.url);
     } else {
