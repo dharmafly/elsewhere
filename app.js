@@ -17,7 +17,7 @@ function handler(req, res) {
     return;
   }
 
-  grapher = new graphMod.Grapher('http:/'+req.url);
+  grapher = new graphMod.Grapher('http:/'+req.url, {strict:false});
 
   grapher.build(function() {
     res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});

@@ -25,10 +25,12 @@ function removeTrailingSlash (a) {
   return a[a.length-1] === "/" ? a.substring(0,a.length-1) : a;
 }
 
-function Grapher (url) {
+function Grapher (url, options) {
   this.rootUrl   = url;
   this.validUrls = [url];
   this.pages     = {};
+  this.options   = options || {};
+  this.options.strict = this.options.strict !== undefined ? this.options.strict : true;
 }
 
 Grapher.prototype = {
@@ -51,8 +53,7 @@ Grapher.prototype = {
       return {
         url:     url,
         title:   page.title,
-        favicon: page.favicon/*,
-        source:  page.sourceUrl*/
+        favicon: page.favicon
       }
     });
 
@@ -64,35 +65,25 @@ Grapher.prototype = {
       }
     });*/
 
+    process.stdout.write('\nrendered ' + _.size(rtnObj) + ' links for ' + self.rootUrl + "\n");
+
     // add alphabetical sorting here
 
     return JSON.stringify(rtnObj);
   },
 
   alreadyUsed: function (url) {
-    var oldUrls = _.pluck(this.pages, 'url');
+    var oldUrls = _.pluck(this.pages, 'url'),
+        newObj = require('url').parse(url);
 
-    /*if (this.pages[url]) {
-      return true;
-    } else {
-      return _.any(oldUrls, function (oldUrl) {
-        return sameUrl(url, oldUrl);
-      });
-    }*/
-    var newObj = require('url').parse(url);
     if (this.pages[url]) {
       return true;
     } else {
       return _.any(oldUrls, function (oldUrl) {
         var same = sameUrl(url, oldUrl);
 
-        // if they are not the same then check if
-        // the domain is the same.
         if (!same) {
           var oldObj = require('url').parse(oldUrl);
-
-          //console.log(nUrlObj.domain + " === " + oUrlObj.domain);
-          //console.log(oUrlObj.path + " < " + nUrlObj.path);
 
           if (newObj.hostname === oldObj.hostname) {
             return oldObj.path > newObj.path;
@@ -176,9 +167,26 @@ Page.prototype = {
   validate: function () {
     var self = this;
 
+    //console.log(self.grapher.options);
+
+    /*if (self.grapher.options.strict === true &&
+      self.grapher.validUrls.length > 1) {
+      self.valid = _.any(self.grapher.validUrls, function (validUrl) {
+        return _.include(self.links, validUrl);
+      });
+    } else {
+      self.valid = true;
+    }*/
+
     self.valid = _.any(self.grapher.validUrls, function (validUrl) {
       return _.include(self.links, validUrl);
     });
+
+    if (self.grapher.options.strict === false && 
+      !self.valid &&
+      self.grapher.validUrls.length === 1) {
+      self.valid = true;
+    }
 
     if (self.valid && !_.include(self.grapher.validUrls, self.url)) {
       self.grapher.validUrls.push(self.url);
