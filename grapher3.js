@@ -43,45 +43,80 @@ Grapher.prototype = {
   },
 
   toJSON: function () {
-    var self = this;
-    return JSON.stringify(_.map(self.validUrls, function (url) {
+    var self   = this,
+        rtnObj = {};
+
+    rtnObj = _.map(self.validUrls, function (url) {
       var page = self.pages[url];
       return {
         url:     url,
         title:   page.title,
-        favicon: page.favicon
-      }
-    }));
-  },
-
-  addPages: function (newLinks) {
-    var existingLinks = _.pluck(this.pages, 'url'),
-        self          = this,
-        notAlreadyUsed;
-
-    _.each(newLinks, function (newLink) {
-      
-      if (self.pages[newLink]) {
-        return;
-      } else {
-        alreadyUsed = _.any(existingLinks, function (existingLink) {
-          return sameUrl(newLink, existingLink);
-        });
-        if (!alreadyUsed) {
-          self.pages[newLink] = new Page(newLink, self);
-        } 
+        favicon: page.favicon/*,
+        source:  page.sourceUrl*/
       }
     });
-    
-    /*
-    var self = this,
-        alreadyUsed;
 
-    _.each(newLinks, function (newLink) {
-      if (!self.pages[newLink]) {
-        self.pages[newLink] = new Page(newLink, self);
+    /*rtnObj = _.map(self.pages, function (page) {
+      return {
+        url:     page.url,
+        title:   page.title,
+        favicon: page.favicon
       }
     });*/
+
+    // add alphabetical sorting here
+
+    return JSON.stringify(rtnObj);
+  },
+
+  alreadyUsed: function (url) {
+    var oldUrls = _.pluck(this.pages, 'url');
+
+    /*if (this.pages[url]) {
+      return true;
+    } else {
+      return _.any(oldUrls, function (oldUrl) {
+        return sameUrl(url, oldUrl);
+      });
+    }*/
+    var newObj = require('url').parse(url);
+    if (this.pages[url]) {
+      return true;
+    } else {
+      return _.any(oldUrls, function (oldUrl) {
+        var same = sameUrl(url, oldUrl);
+
+        // if they are not the same then check if
+        // the domain is the same.
+        if (!same) {
+          var oldObj = require('url').parse(oldUrl);
+
+          //console.log(nUrlObj.domain + " === " + oUrlObj.domain);
+          //console.log(oUrlObj.path + " < " + nUrlObj.path);
+
+          if (newObj.hostname === oldObj.hostname) {
+            return oldObj.path > newObj.path;
+          } else {
+            return false;
+          }
+          
+          return nUrlObj.domain === oUrlObj.domain && 
+            oUrlObj.path < nUrlObj.path;
+        }
+
+        return same;
+      });
+    }
+  },
+
+  addPages: function (newLinks, sourceUrl) {
+    var self = this;
+
+    _.each(newLinks, function (newLink) {
+      if (!self.alreadyUsed(newLink)) {
+        self.pages[newLink] = new Page(newLink, self, sourceUrl);
+      }
+    });
   },
 
   allFetched: function () {
@@ -123,7 +158,7 @@ Grapher.prototype = {
   }
 }
 
-function Page (url, grapher) {
+function Page (url, grapher, sourceUrl) {
   this.url     = url;
   this.title   = "";
   this.favicon = "";
@@ -131,6 +166,7 @@ function Page (url, grapher) {
   this.status  = "unfetched";
   this.valid   = null;
   this.grapher = grapher;
+  this.sourceUrl = sourceUrl;
 }
 
 Page.prototype = {
@@ -155,6 +191,7 @@ Page.prototype = {
     var self = this;
 
     self.status = "fetching";
+    console.log(self.url);
 
     jsdom.env(self.url, [
       globals.JQUERY_URI
@@ -170,13 +207,14 @@ Page.prototype = {
         self.title = window.document.title;
         self.resolveFavicon(window);
         self.validate();
-        self.grapher.addPages(self.links);
+        self.grapher.addPages(self.links, self.url);
         self.status = "fetched";
+        console.log(self.url);
 
         callback();
       } else {
         self.status = "error";
-        console.log(errors);
+        console.log(self.url, errors);
         callback();
       }
 
