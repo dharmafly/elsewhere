@@ -4,14 +4,35 @@ var _     = require('underscore')._,
 
 _.mixin(require('underscore.deferred'));
 
+function sameUrl (url1, url2) {
+
+  // remove www if www is present
+  url1 = removeWWW(url1);
+  url2 = removeWWW(url2);
+
+  // remove trailing slash if one is present
+  url1 = removeTrailingSlash(url1);
+  url2 = removeTrailingSlash(url2);
+
+  return url1 === url2;
+}
+
+function removeWWW (a) {
+  return a.search('www') !== -1 ? a.substring(0,7) + a.substring(11,a.length) : a;
+}
+
+function removeTrailingSlash (a) {
+  return a[a.length-1] === "/" ? a.substring(0,a.length-1) : a;
+}
+
 function Grapher (url) {
-  this.rootUrl = url;
+  this.rootUrl   = url;
   this.validUrls = [url];
 }
 
 Grapher.prototype = {
   
-  constructor : Grapher,
+  constructor: Grapher,
   pages: {},
   validUrls: [],
 
@@ -25,36 +46,66 @@ Grapher.prototype = {
     return JSON.stringify(_.map(self.validUrls, function (url) {
       var page = self.pages[url];
       return {
-        url: url,
-        title: page.title,
+        url:     url,
+        title:   page.title,
         favicon: page.favicon
       }
     }));
   },
 
+  addPages: function (newLinks) {
+    var self = this;
+    /*var existingLinks = _.pluck(this.pages, 'url'),
+        self          = this,
+        notAlreadyUsed;
+
+    _.each(newLinks, function (newLink) {
+      
+      notAlreadyUsed = _.all(existingLinks, function (existingLink) {
+        return sameUrl(newLink, existingLink);
+      });
+
+      if (notAlreadyUsed) {
+        self.pages[newLink] = new Page(newLink, self);
+      } 
+    });*/
+    
+    _.each(newLinks, function (newLink) {
+      if (!self.pages[newLink]) {
+        self.pages[newLink] = new Page(newLink, self);
+      } 
+    });
+  },
+
   fetchPages: function (callback) {
-    var self     = this,
-        statuses = [],
+    var self         = this,
         whenFetched;
 
     whenFetched = function () {
-      statuses = _.pluck(self.pages, 'status');
+      var statuses     = _.pluck(self.pages, 'status'),
+          fetchedCount = 0,
+          allFetched;
 
-      console.log(statuses);
-
-      var allFetched = _.all(statuses, function (s) {
+      allFetched = _.all(statuses, function (s) {
         return s === "fetched";
       });
 
+      _.each(statuses, function (s) {
+        fetchedCount += (s === "fetched" ? 1 : 0);
+      });
+
+      console.log(self.rootUrl + ': fetched ' + 
+        fetchedCount + '/' + statuses.length);
+
       if (allFetched) {
-        console.log('all fetched');
+        console.log('fetched all');
         callback();
       } else {
         self.fetchPages(callback);
       }
     }
 
-    _.each(this.pages, function (page) {
+    _.each(self.pages, function (page) {
       if (page.status === "unfetched") {
         page.fetch(whenFetched);
       }
@@ -76,18 +127,24 @@ Page.prototype = {
 
   constructor: Page,
 
-  validate: function (validUrls) {
+  validate: function () {
     var self = this;
-    return this.valid = _.any(validUrls, function (validUrl) {
+
+    self.valid = _.any(self.grapher.validUrls, function (validUrl) {
       return _.include(self.links, validUrl);
     });
+
+    if (self.valid && !_.include(self.grapher.validUrls, self.url)) {
+      self.grapher.validUrls.push(self.url);
+    }
+
+    return this.valid;
   },
 
   fetch: function (callback) {
     var self = this;
 
     self.status = "fetching";
-    //console.log("Fetching " + self.url);
 
     jsdom.env(self.url, [
       globals.JQUERY_URI
@@ -102,29 +159,49 @@ Page.prototype = {
 
         self.title = window.document.title;
 
-        var favicon = window.$('link[rel="shortcut icon"]');
-        
-        self.favicon = favicon.length > 0 ? favicon[0].href : "";
-        
+        self.resolveFavicon(window);
 
-        if (self.validate(self.grapher.validUrls)) {
-          if (!_.include(self.grapher.validUrls, self.url)) {
-            self.grapher.validUrls.push(self.url);
-          }
-        }
+        self.validate();
 
-        _.each(self.links, function (link) {
+        self.grapher.addPages(self.links);
+
+        /*_.each(self.links, function (link) {
           if (!self.grapher.pages[link]) self.grapher.pages[link] = new Page(link, self.grapher);
-        });
+        });*/
 
         self.status = "fetched";
-        callback(self);
-        //console.log("Fetched " + self.url);
+        callback();
       } else {
-        //console.log("Error! " + JSON.stringify(errors));
-        callback(errors);
+        self.status = "error";
+        callback();
       }
+
+      // release memory used by window object
+      window.close();
     });
+  },
+
+  resolveFavicon: function (window) {
+    var favicon   = window.$('link[rel="shortcut icon"]'),
+        url       = require('url').parse(this.url),
+        rootUrl   = url.protocol + "//" + url.host;
+
+    if (favicon.length > 0) {
+      favicon = favicon[0].href;
+
+      if (favicon.substring(0,2) === "//") {
+        this.favicon = url.protocol + favicon;
+      } else if (favicon.substring(0,1) === "/") {
+        this.favicon = url.protocol + favicon;
+      } else {
+        this.favicon = favicon;
+      }
+
+    } else {
+      this.favicon = rootUrl + "/favicon.ico";
+    }
+
+    return this.favicon;
   }
 }
 

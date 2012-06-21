@@ -20,7 +20,7 @@ function handler(req, res) {
   grapher = new graphMod.Grapher('http:/'+req.url);
 
   grapher.build(function() {
-    res.writeHead(200, {'Content-Type': 'application/json'});
+    res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
     res.end(grapher.toJSON());
   });
 }
