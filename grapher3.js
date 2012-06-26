@@ -1,6 +1,7 @@
 var _     = require('underscore')._,
   jsdom   = require('jsdom'),
-  globals = require('./globals.js');
+  globals = require('./globals.js'),
+  cache   = {};
 
 _.mixin(require('underscore.deferred'));
 
@@ -57,17 +58,7 @@ Grapher.prototype = {
       }
     });
 
-    /*rtnObj = _.map(self.pages, function (page) {
-      return {
-        url:     page.url,
-        title:   page.title,
-        favicon: page.favicon
-      }
-    });*/
-
     process.stdout.write('\nrendered ' + _.size(rtnObj) + ' links for ' + self.rootUrl + "\n");
-
-    // add alphabetical sorting here
 
     return JSON.stringify(rtnObj);
   },
@@ -167,24 +158,11 @@ Page.prototype = {
   validate: function () {
     var self = this;
 
-    //console.log(self.grapher.options);
-
-    /*if (self.grapher.options.strict === true &&
-      self.grapher.validUrls.length > 1) {
-      self.valid = _.any(self.grapher.validUrls, function (validUrl) {
-        return _.include(self.links, validUrl);
-      });
-    } else {
-      self.valid = true;
-    }*/
-
     self.valid = _.any(self.grapher.validUrls, function (validUrl) {
       return _.include(self.links, validUrl);
     });
 
-    if (self.grapher.options.strict === false && 
-      !self.valid &&
-      self.grapher.validUrls.length === 1) {
+    if (self.grapher.options.strict === false) {
       self.valid = true;
     }
 
@@ -199,6 +177,18 @@ Page.prototype = {
     var self = this;
 
     self.status = "fetching";
+
+    if (cache[self.url]) {
+      var cached = cache[self.url];
+      self.title = cached.title;
+      self.links = cached.links;
+      self.favicon = cached.favicon;
+      self.validate();
+      self.grapher.addPages(self.links, self.url);
+      self.status = "fetched";
+      callback();
+      return;
+    }
 
     jsdom.env(self.url, [
       globals.JQUERY_URI
@@ -216,6 +206,12 @@ Page.prototype = {
         self.validate();
         self.grapher.addPages(self.links, self.url);
         self.status = "fetched";
+
+        cache[self.url] = {
+          title   : self.title,
+          links   : self.links,
+          favicon : self.favicon
+        };
 
         callback();
       } else {
