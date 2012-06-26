@@ -5,7 +5,26 @@ var _     = require('underscore')._,
 
 _.mixin(require('underscore.deferred'));
 
+/**
+ * Function for determining if two URLs are identical.
+ * Ignores 'www' and trailing slashes.
+ * Treats 'http' and 'https' the same.
+ */
 function sameUrl (url1, url2) {
+
+  function removeWWW (a) {
+    return a.search('www') !== -1 ? a.substring(0,7) + 
+      a.substring(11,a.length) : a;
+  }
+
+  function removeTrailingSlash (a) {
+    return a[a.length-1] === "/" ? a.substring(0,a.length-1) : a;
+  }
+
+  function removeProtocol (a) {
+    return a[4] === ":" ? a.substring(5) : 
+           a[5] === ":" ? a.substring(6) : a;
+  }
 
   // remove www if www is present
   url1 = removeWWW(url1);
@@ -15,17 +34,19 @@ function sameUrl (url1, url2) {
   url1 = removeTrailingSlash(url1);
   url2 = removeTrailingSlash(url2);
 
+  // remove protocol of http or https
+  url1 = removeProtocol(url1);
+  url2 = removeProtocol(url2);
+
   return url1 === url2;
 }
 
-function removeWWW (a) {
-  return a.search('www') !== -1 ? a.substring(0,7) + a.substring(11,a.length) : a;
-}
-
-function removeTrailingSlash (a) {
-  return a[a.length-1] === "/" ? a.substring(0,a.length-1) : a;
-}
-
+/**
+ * The Graphing object uses page objects to scrape URLs for
+ * rel=me links. All valid pages are kept in this.pages.
+ * Each child page contains a reference to the grapher that
+ * created it.
+ */
 function Grapher (url, options) {
   this.rootUrl   = url;
   this.validUrls = [url];
@@ -39,12 +60,20 @@ Grapher.prototype = {
   constructor: Grapher,
   validUrls: [],
 
+  /**
+   * Primary method of the grapher. Fetches the page at the
+   * root URL and all subsequent pages. Calls the callback
+   * parameter when complete. 
+   */
   build: function (callback) {
     this.pages[this.rootUrl] = new Page(this.rootUrl, this);
     process.stdout.write('\nfetching ' + this.rootUrl + "\n");
     this.fetchPages(callback);
   },
 
+  /**
+   * Returns this.pages as a simplified JSON string.
+   */
   toJSON: function () {
     var self   = this,
         rtnObj = {};
@@ -63,6 +92,10 @@ Grapher.prototype = {
     return JSON.stringify(rtnObj);
   },
 
+  /**
+   * Used to by `addPages` to work out if a page or related
+   * page had already been fetched.
+   */
   alreadyUsed: function (url) {
     var oldUrls = _.pluck(this.pages, 'url'),
         newObj = require('url').parse(url);
@@ -91,6 +124,10 @@ Grapher.prototype = {
     }
   },
 
+  /**
+   * Used by `Page.fetch` to add new Page objects to the Grapher
+   * for each link which has not yet been fetched.
+   */
   addPages: function (newLinks, sourceUrl) {
     var self = this;
 
@@ -101,6 +138,10 @@ Grapher.prototype = {
     });
   },
 
+  /**
+   * Checks the status of every Page in `this.pages`.
+   * Returns true if all are either "fetched" or "error".
+   */
   allFetched: function () {
     var statuses = _.pluck(this.pages, 'status');
 
@@ -109,8 +150,12 @@ Grapher.prototype = {
     });
   },
 
+  /**
+   * Fetches each unfetched page in the `this.pages` array.
+   * When every page has been fetched, executes callback().
+   */
   fetchPages: function (callback) {
-    var self         = this,
+    var self = this,
         whenFetched;
 
     whenFetched = function () {
@@ -140,6 +185,11 @@ Grapher.prototype = {
   }
 }
 
+/**
+ * The Page object. Stores important scraped information
+ * such as 'rel=me' links, the url they were found on as
+ * well as the favicon.
+ */
 function Page (url, grapher, sourceUrl) {
   this.url     = url;
   this.title   = "";
@@ -155,6 +205,11 @@ Page.prototype = {
 
   constructor: Page,
 
+  /**
+   * If in strict mode will return true if this Page links
+   * back to a url in `this.grapher.validUrls`. If not in
+   * strict mode then always returns true.
+   */
   validate: function () {
     var self = this;
 
@@ -173,6 +228,11 @@ Page.prototype = {
     return this.valid;
   },
 
+  /**
+   * Uses jsdom to scrape a page for 'rel=me' links, the title
+   * of the page, and its favicon. If the page is already in
+   * module's cache object then the chached copy is returned.
+   */
   fetch: function (callback) {
     var self = this;
 
@@ -236,7 +296,7 @@ Page.prototype = {
       if (favicon.substring(0,2) === "//") {
         this.favicon = url.protocol + favicon;
       } else if (favicon.substring(0,1) === "/") {
-        this.favicon = url.protocol + favicon;
+        this.favicon = rootUrl + favicon;
       } else {
         this.favicon = favicon;
       }
