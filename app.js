@@ -1,6 +1,6 @@
 var app      = require('http').createServer(handler),
     globals  = require('./globals.js'),
-    graphMod = require('./grapher3.js');
+    graphMod = require('./grapher.js');
 
 function handler(req, res) {
   var rtn = [], grapher;
