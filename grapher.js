@@ -5,6 +5,14 @@ var _       = require('underscore')._,
 _.mixin(require('underscore.deferred'));
 
 /**
+ * Returns whitespace as long as the provided
+ * number of times
+ */
+function whitespace (numberOfCharacters) {
+  return new Array(numberOfCharacters).join(" ");
+}
+
+/**
  * Function for determining if two URLs are identical.
  * Ignores 'www' and trailing slashes.
  * Treats 'http' and 'https' the same.
@@ -47,10 +55,10 @@ function sameUrl (url1, url2) {
  * created it.
  */
 function Grapher (url, options) {
-  this.rootUrl   = url;
-  this.validUrls = [url];
-  this.pages     = {};
-  this.options   = options || {};
+  this.rootUrl     = url;
+  this.validUrls   = [url];
+  this.pages       = {};
+  this.options     = options || {};
   this.options.strict = this.options.strict !== undefined ? this.options.strict : true;
 }
 
@@ -65,8 +73,9 @@ Grapher.prototype = {
    * parameter when complete. 
    */
   build: function (callback) {
+    this.logFetching();
+
     this.pages[this.rootUrl] = new Page(this.rootUrl, this);
-    process.stdout.write('\nfetching ' + this.rootUrl + "\n");
     this.fetchPages(callback);
   },
 
@@ -86,7 +95,7 @@ Grapher.prototype = {
       }
     });
 
-    process.stdout.write('\nrendered ' + _.size(rtnObj) + ' links for ' + self.rootUrl + "\n");
+    self.logRendered(rtnObj);
 
     return JSON.stringify(rtnObj);
   },
@@ -158,20 +167,13 @@ Grapher.prototype = {
         whenFetched;
 
     whenFetched = function () {
-      var statuses     = _.pluck(self.pages, 'status'),
-          fetchedCount = 0;
-
-      _.each(statuses, function (s) {
-        fetchedCount += (s === "fetched" ? 1 : 0);
-      });
-
-      process.stdout.write('fetched ' + 
-        fetchedCount + '/' + statuses.length + " \r");
+      self.logFetched();
 
       if (self.allFetched()) {
-        process.stdout.write('\nfetched all for ' + self.rootUrl + "\n");
+        // finished fetching all pages, execute callback.
         callback();
       } else {
+        // some pages haven't been fetched yet, execute self again.
         self.fetchPages(callback);
       }
     }
@@ -181,6 +183,49 @@ Grapher.prototype = {
         page.fetch(whenFetched);
       }
     });
+  },
+
+
+
+
+  // Console logging code...
+
+
+
+
+  /**
+   * Logs out to the console the grapher's progress
+   * building the graph. Called by `this.fetchPages`
+   */
+  logFetched: function () {
+    var statuses     = _.pluck(this.pages, 'status'),
+        fetchedCount = 0;
+
+    _.each(statuses, function (s) {
+      fetchedCount += (s === "fetched" ? 1 : 0);
+    });
+
+    process.stdout.write('fetched  ' + 
+      fetchedCount + '/' + statuses.length + 
+      " : " + this.rootUrl + whitespace(20) + "\r");
+  },
+
+  /**
+   * Logs out to the console how many pages are
+   * rendered by `this.toJSON`
+   */
+  logRendered: function (obj) {
+    process.stdout.write('\nrendered ' + 
+      _.size(obj) + '/' + _.size(this.pages) + 
+      " : " + this.rootUrl + "\n");
+  },
+
+  /**
+   * Logs out to the console when the grapher begins
+   * building the graph.
+   */
+  logFetching: function () {
+    process.stdout.write('fetching ' + this.rootUrl + whitespace(20) + "\n");
   }
 }
 
