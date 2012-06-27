@@ -79,6 +79,35 @@ Grapher.prototype = {
     this.fetchPages(callback);
   },
 
+
+  /**
+   * Fetches each unfetched page in the `this.pages` array.
+   * When every page has been fetched, executes callback().
+   */
+  fetchPages: function (callback) {
+    var self = this,
+        whenFetched;
+
+    whenFetched = function () {
+      self.logFetched();
+
+      if (self.allFetched()) {
+        // finished fetching all pages, execute callback.
+        callback();
+      } else {
+        // some pages haven't been fetched yet, execute self again.
+        self.fetchPages(callback);
+      }
+    }
+
+    _.each(self.pages, function (page) {
+      if (page.status === "unfetched") {
+        page.fetch(whenFetched);
+      }
+    });
+  },
+
+
   /**
    * Returns this.pages as a simplified JSON string.
    */
@@ -133,20 +162,6 @@ Grapher.prototype = {
   },
 
   /**
-   * Used by `Page.fetch` to add new Page objects to the Grapher
-   * for each link which has not yet been fetched.
-   */
-  addPages: function (newLinks, sourceUrl) {
-    var self = this;
-
-    _.each(newLinks, function (newLink) {
-      if (!self.alreadyUsed(newLink)) {
-        self.pages[newLink] = new Page(newLink, self, sourceUrl);
-      }
-    });
-  },
-
-  /**
    * Checks the status of every Page in `this.pages`.
    * Returns true if all are either "fetched" or "error".
    */
@@ -155,33 +170,6 @@ Grapher.prototype = {
 
     return _.all(statuses, function (status) {
       return status === "fetched" || status === "error";
-    });
-  },
-
-  /**
-   * Fetches each unfetched page in the `this.pages` array.
-   * When every page has been fetched, executes callback().
-   */
-  fetchPages: function (callback) {
-    var self = this,
-        whenFetched;
-
-    whenFetched = function () {
-      self.logFetched();
-
-      if (self.allFetched()) {
-        // finished fetching all pages, execute callback.
-        callback();
-      } else {
-        // some pages haven't been fetched yet, execute self again.
-        self.fetchPages(callback);
-      }
-    }
-
-    _.each(self.pages, function (page) {
-      if (page.status === "unfetched") {
-        page.fetch(whenFetched);
-      }
     });
   },
 

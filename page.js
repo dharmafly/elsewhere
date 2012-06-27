@@ -82,7 +82,7 @@ Page.prototype = {
         self.title = window.document.title;
         self.resolveFavicon(window);
         self.validate();
-        self.grapher.addPages(self.links, self.url);
+        self.addPages(self.links, self.url);
         self.status = "fetched";
 
         cache[self.url] = {
@@ -100,6 +100,20 @@ Page.prototype = {
 
       // release memory used by window object
       if (window) window.close();
+    });
+  },
+
+  /**
+   * Used by `Page.fetch` to add new Page objects to the Grapher
+   * for each link which has not yet been fetched.
+   */
+  addPages: function (newLinks, sourceUrl) {
+    var grapher = this.grapher;
+
+    _.each(newLinks, function (newLink) {
+      if (!grapher.alreadyUsed(newLink)) {
+        grapher.pages[newLink] = new Page(newLink, grapher, sourceUrl);
+      }
     });
   },
 
