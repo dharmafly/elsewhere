@@ -1,194 +1,312 @@
-var _ 		= require('underscore')._,
-	jsdom   = require('jsdom'),
-	globals = require('./globals.js');
+var _     = require('underscore')._,
+  jsdom   = require('jsdom'),
+  globals = require('./globals.js'),
+  cache   = {};
 
-_.mixin( require('underscore.deferred') );
+_.mixin(require('underscore.deferred'));
 
-var Grapher = function () {
-	this.count = 0; 
-	this.total = 0;
-	this.confirmedLinks = [];
-	this.traversedLinks = [];
-	this.traversedLinkObjects = {};
-	this.graph = {};
-	this.took;
-};
+/**
+ * Function for determining if two URLs are identical.
+ * Ignores 'www' and trailing slashes.
+ * Treats 'http' and 'https' the same.
+ */
+function sameUrl (url1, url2) {
 
-Grapher.prototype.buildGraph = function(path) {
-	var deferred = _.Deferred(),
-		promise  = deferred.promise(),
-		rtn = {},
-		me = this,
-		buildingLinkObjects = [];
+  function removeWWW (a) {
+    return a.search('www') !== -1 ? a.substring(0,7) + 
+      a.substring(11,a.length) : a;
+  }
 
-	console.log("Building graph for " + path);
+  function removeTrailingSlash (a) {
+    return a[a.length-1] === "/" ? a.substring(0,a.length-1) : a;
+  }
 
-	me.confirmedLinks.push(path);
-	me.took = new Date().getTime();
+  function removeProtocol (a) {
+    return a[4] === ":" ? a.substring(5) : 
+           a[5] === ":" ? a.substring(6) : a;
+  }
 
-	me.getLinks(path)
-	.then(function(obj) {
+  // remove www if www is present
+  url1 = removeWWW(url1);
+  url2 = removeWWW(url2);
 
-		me.count = 0;
-		me.total = obj.links.length;
-		rtn = obj;
+  // remove trailing slash if one is present
+  url1 = removeTrailingSlash(url1);
+  url2 = removeTrailingSlash(url2);
 
-		me.buildConnections(obj)
-		.fail(function(error) {
-			console.log(JSON.stringify(error));
-		})
-		.pipe(function() {
-			rtn.links = me.findConfirmedLinkObjects(arguments);
-			//me.traversedLinks.push(path);
-			
-			me.buildObjConnections(rtn.links).then(function() {
-				rtn.builtObjectConnections = arguments;
-				rtn.confirmed = me.confirmedLinks;
-				rtn.took = new Date().getTime() - me.took;
-				deferred.resolve(rtn);
-			});
-			/*
-			rtn.confirmed = me.confirmedLinks;
-			rtn.took = new Date().getTime() - me.took;
+  // remove protocol of http or https
+  url1 = removeProtocol(url1);
+  url2 = removeProtocol(url2);
 
-			deferred.resolve(rtn);*/
-		});
-	});
-
-	return promise;
+  return url1 === url2;
 }
 
-Grapher.prototype.buildObjConnections = function(linkObjects) {
-	var promises = [],
-		me       = this;
-
-	linkObjects.forEach(function(linkObject) {
-		var deferred = _.Deferred(),
-			promise  = deferred.promise();
-
-		if (!_.include(me.traversedLinks, linkObject.root)) {
-
-			console.log("Building " + linkObject.root);
-
-			me.buildConnections(linkObject)
-			.fail(function(error) {
-				console.log(JSON.stringify(error));
-			})
-			.pipe(function() {
-				console.log("Built " + linkObject.root);
-				console.log(me.traversedLinks);
-
-				linkObject.links = me.findConfirmedLinkObjects(arguments);
-				me.buildObjConnections(linkObject.links).then(function () {
-					deferred.resolve(arguments);
-				});
-			});
-		} else {
-			console.log("Already built " + linkObject.root);
-			deferred.resolve(arguments);
-		}
-
-		promises.push(promise);
-	});
-
-	return _.when.apply(_, promises);
+/**
+ * The Graphing object uses page objects to scrape URLs for
+ * rel=me links. All valid pages are kept in this.pages.
+ * Each child page contains a reference to the grapher that
+ * created it.
+ */
+function Grapher (url, options) {
+  this.rootUrl   = url;
+  this.validUrls = [url];
+  this.pages     = {};
+  this.options   = options || {};
+  this.options.strict = this.options.strict !== undefined ? this.options.strict : true;
 }
 
-Grapher.prototype.findConfirmedLinkObjects = function(linksArray) {
-	var confirmedArray   = [],
-		unconfirmedArray = [],
-		me = this;
+Grapher.prototype = {
+  
+  constructor: Grapher,
+  validUrls: [],
 
-	process.stdout.write("Confirming links...\r");
+  /**
+   * Primary method of the grapher. Fetches the page at the
+   * root URL and all subsequent pages. Calls the callback
+   * parameter when complete. 
+   */
+  build: function (callback) {
+    this.pages[this.rootUrl] = new Page(this.rootUrl, this);
+    process.stdout.write('\nfetching ' + this.rootUrl + "\n");
+    this.fetchPages(callback);
+  },
 
-	_.each(linksArray, function(link, i) {
-		if(me.confirmed(link)) {
-			if(!_.include(me.confirmedLinks, link.root)) {
-				me.confirmedLinks.push(link.root);
-			}
-			confirmedArray.push(link);
-		} else {
-			unconfirmedArray.push(link);
-		}
-	});
+  /**
+   * Returns this.pages as a simplified JSON string.
+   */
+  toJSON: function () {
+    var self   = this,
+        rtnObj = {};
 
-	process.stdout.write("Confirming links... found " + confirmedArray.length + " \n");
+    rtnObj = _.map(self.validUrls, function (url) {
+      var page = self.pages[url];
+      return {
+        url:     url,
+        title:   page.title,
+        favicon: page.favicon
+      }
+    });
 
-	if (confirmedArray.length > 0) {
-		return confirmedArray.concat(me.findConfirmedLinkObjects(unconfirmedArray));
-	} else {
-		return confirmedArray;
-	}
-};
+    process.stdout.write('\nrendered ' + _.size(rtnObj) + ' links for ' + self.rootUrl + "\n");
 
-Grapher.prototype.confirmed = function(linksObject) {
-	var rtn = false,
-		me  = this;
+    return JSON.stringify(rtnObj);
+  },
 
-	_.each(linksObject.links, function(unconfirmedLink) {
-		if (_.include(me.confirmedLinks, unconfirmedLink)) {
-			rtn = true;
-		}
-	});
+  /**
+   * Used to by `addPages` to work out if a page or related
+   * page had already been fetched.
+   */
+  alreadyUsed: function (url) {
+    var oldUrls = _.pluck(this.pages, 'url'),
+        newObj = require('url').parse(url);
 
-	return rtn;
-};
+    if (this.pages[url]) {
+      return true;
+    } else {
+      return _.any(oldUrls, function (oldUrl) {
+        var same = sameUrl(url, oldUrl);
 
-Grapher.prototype.buildConnections = function(obj) {
-	var promises = [],
-		me       = this;
+        if (!same) {
+          var oldObj = require('url').parse(oldUrl);
 
-	obj.links.forEach(function (url) {
-		if (url.search(new RegExp ('^(http|https)://')) !== -1) {
-			promises.push(me.getLinks(url));
-		}
-	});
+          if (newObj.hostname === oldObj.hostname) {
+            return oldObj.path > newObj.path;
+          } else {
+            return false;
+          }
+          
+          return nUrlObj.domain === oUrlObj.domain && 
+            oUrlObj.path < nUrlObj.path;
+        }
 
-	return _.when.apply(_, promises);
-};
+        return same;
+      });
+    }
+  },
 
-Grapher.prototype.getLinks = function(path) {
-	var deferred = _.Deferred(),
-		promise  = deferred.promise(),
-		me       = this,
-		obj      = {
-			root: path,
-			links:[]
-		};
+  /**
+   * Used by `Page.fetch` to add new Page objects to the Grapher
+   * for each link which has not yet been fetched.
+   */
+  addPages: function (newLinks, sourceUrl) {
+    var self = this;
 
-	if (_.include(me.traversedLinks, path)) {
-		deferred.resolve(me.traversedLinkObjects[path]);
-		return promise;
-	}
+    _.each(newLinks, function (newLink) {
+      if (!self.alreadyUsed(newLink)) {
+        self.pages[newLink] = new Page(newLink, self, sourceUrl);
+      }
+    });
+  },
 
-	console.log("Scanning " + path + "...");
+  /**
+   * Checks the status of every Page in `this.pages`.
+   * Returns true if all are either "fetched" or "error".
+   */
+  allFetched: function () {
+    var statuses = _.pluck(this.pages, 'status');
 
-	jsdom.env(path, [
-		globals.JQUERY_URI
-	],
-	function(errors, window) {
+    return _.all(statuses, function (status) {
+      return status === "fetched" || status === "error";
+    });
+  },
 
-		if (!errors) {
-			window.$("a").each(function(i, val) {
-				if (window.$(val).attr('rel').search('me') !== -1) {
-					if (window.$(val).attr('href') !== '/') obj.links.push(window.$(val).attr('href'));
-				}
-			});
+  /**
+   * Fetches each unfetched page in the `this.pages` array.
+   * When every page has been fetched, executes callback().
+   */
+  fetchPages: function (callback) {
+    var self = this,
+        whenFetched;
 
-			me.count++;
-			process.stdout.write(" "+me.count + "/" + me.total + " Found " + 
-				obj.links.length + " links @ " + path.substring(0,40) + "\r");
+    whenFetched = function () {
+      var statuses     = _.pluck(self.pages, 'status'),
+          fetchedCount = 0;
 
-			me.traversedLinks.push(path);
-			me.traversedLinkObjects.push(obj);
-			deferred.resolve(obj);
-		} else {
-			console.log("Error! " + JSON.stringify(errors));
-			deferred.reject(errors);
-		}
-	});
+      _.each(statuses, function (s) {
+        fetchedCount += (s === "fetched" ? 1 : 0);
+      });
 
-	return promise;
-};
+      process.stdout.write('fetched ' + 
+        fetchedCount + '/' + statuses.length + " \r");
+
+      if (self.allFetched()) {
+        process.stdout.write('\nfetched all for ' + self.rootUrl + "\n");
+        callback();
+      } else {
+        self.fetchPages(callback);
+      }
+    }
+
+    _.each(self.pages, function (page) {
+      if (page.status === "unfetched") {
+        page.fetch(whenFetched);
+      }
+    });
+  }
+}
+
+/**
+ * The Page object. Stores important scraped information
+ * such as 'rel=me' links, the url they were found on as
+ * well as the favicon.
+ */
+function Page (url, grapher, sourceUrl) {
+  this.url     = url;
+  this.title   = "";
+  this.favicon = "";
+  this.links   = [];
+  this.status  = "unfetched";
+  this.valid   = null;
+  this.grapher = grapher;
+  this.sourceUrl = sourceUrl;
+}
+
+Page.prototype = {
+
+  constructor: Page,
+
+  /**
+   * If in strict mode will return true if this Page links
+   * back to a url in `this.grapher.validUrls`. If not in
+   * strict mode then always returns true.
+   */
+  validate: function () {
+    var self = this;
+
+    self.valid = _.any(self.grapher.validUrls, function (validUrl) {
+      return _.include(self.links, validUrl);
+    });
+
+    if (self.grapher.options.strict === false) {
+      self.valid = true;
+    }
+
+    if (self.valid && !_.include(self.grapher.validUrls, self.url)) {
+      self.grapher.validUrls.push(self.url);
+    }
+
+    return this.valid;
+  },
+
+  /**
+   * Uses jsdom to scrape a page for 'rel=me' links, the title
+   * of the page, and its favicon. If the page is already in
+   * module's cache object then the chached copy is returned.
+   */
+  fetch: function (callback) {
+    var self = this;
+
+    self.status = "fetching";
+
+    if (cache[self.url]) {
+      var cached = cache[self.url];
+      self.title = cached.title;
+      self.links = cached.links;
+      self.favicon = cached.favicon;
+      self.validate();
+      self.grapher.addPages(self.links, self.url);
+      self.status = "fetched";
+      callback();
+      return;
+    }
+
+    jsdom.env(self.url, [
+      globals.JQUERY_URI
+    ],
+    function(errors, window) {
+      if (!errors) {
+        window.$("a[rel~=me]").each(function (i, elem) {
+          if (elem.href.substring(0,1) !== '/') {
+            self.links.push(elem.href);
+          }
+        });
+
+        self.title = window.document.title;
+        self.resolveFavicon(window);
+        self.validate();
+        self.grapher.addPages(self.links, self.url);
+        self.status = "fetched";
+
+        cache[self.url] = {
+          title   : self.title,
+          links   : self.links,
+          favicon : self.favicon
+        };
+
+        callback();
+      } else {
+        self.status = "error";
+        console.log(self.url, errors);
+        callback();
+      }
+
+      // release memory used by window object
+      if (window) window.close();
+    });
+  },
+
+  resolveFavicon: function (window) {
+    var favicon   = window.$('link[rel="shortcut icon"]'),
+        url       = require('url').parse(this.url),
+        rootUrl   = url.protocol + "//" + url.host;
+
+    if (favicon.length > 0) {
+      favicon = favicon[0].href;
+
+      if (favicon.substring(0,2) === "//") {
+        this.favicon = url.protocol + favicon;
+      } else if (favicon.substring(0,1) === "/") {
+        this.favicon = rootUrl + favicon;
+      } else {
+        this.favicon = favicon;
+      }
+
+    } else {
+      this.favicon = rootUrl + "/favicon.ico";
+    }
+
+    return this.favicon;
+  }
+}
 
 exports.Grapher = Grapher;
