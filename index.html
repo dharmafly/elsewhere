@@ -7,9 +7,11 @@
     <script>
 
 function getGraph() {
-  var url = document.getElementById('url'),
-      url = location.href + '?q=' + encodeURIComponent(url.value) + '&strict',
-      xhr = new XMLHttpRequest();
+  var url    = document.getElementById('url'),
+      strict = document.getElementById('strict'),
+      strict = strict.checked ? '&strict' : '',
+      url    = location.href + '?q=' + encodeURIComponent(url.value) + strict,
+      xhr    = new XMLHttpRequest();
 
   xhr.open("GET", url, true);
   xhr.onreadystatechange = function(event){
@@ -29,7 +31,7 @@ function renderGraph(links) {
       listHTML = "";
 
   links.forEach(function (link) {
-    listHTML += '<li><a href="' + link.url + '">' + link.title + '</a></li>';
+    listHTML += '<li><a href="' + link.url + '">' + (link.title || link.url) + '</a></li>';
   });
 
   listElem.innerHTML = listHTML;
@@ -40,11 +42,13 @@ function renderGraph(links) {
   <body>
     <h1>Node Social Graph</h1>
     <p>Type in a domain and path into the address bar e.g.</p>
-    <pre>http://thiswebsite.com/twitter.com/ac94</pre>
+    <pre>http://localhost:8888/twitter.com/ac94</pre>
     <p>The result will be returned as JSON</p>
     <p>Alternatively, enter a url below.</p>
     <ul id="list"></ul>
     <input type="text" id="url" />
+    <input type="checkbox" id="strict" />
+    <label>strict</label>
     <button onclick="getGraph()">Submit</button>
   </body>
 </html>
