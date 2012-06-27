@@ -130,16 +130,16 @@ Grapher.prototype = {
   },
 
   /**
-   * Used to by `addPages` to work out if a page or related
+   * Used to by `Page.addPages` to work out if a page or related
    * page had already been fetched.
    */
   alreadyUsed: function (url) {
-    var oldUrls = _.pluck(this.pages, 'url'),
-        newObj = require('url').parse(url);
-
     if (this.pages[url]) {
       return true;
     } else {
+      var oldUrls = _.pluck(this.pages,'url'),
+          newObj  = require('url').parse(url);
+
       return _.any(oldUrls, function (oldUrl) {
         var same = sameUrl(url, oldUrl);
 
@@ -152,8 +152,8 @@ Grapher.prototype = {
             return false;
           }
           
-          return nUrlObj.domain === oUrlObj.domain && 
-            oUrlObj.path < nUrlObj.path;
+          return newObj.domain === oldObj.domain && 
+            oldObj.path < newObj.path;
         }
 
         return same;
@@ -193,7 +193,7 @@ Grapher.prototype = {
       fetchedCount += (s === "fetched" ? 1 : 0);
     });
 
-    process.stdout.write('fetched  ' + 
+    process.stdout.write('crawled  ' + 
       fetchedCount + '/' + statuses.length + 
       " : " + this.rootUrl + whitespace(20) + "\r");
   },
@@ -213,7 +213,7 @@ Grapher.prototype = {
    * building the graph.
    */
   logFetching: function () {
-    process.stdout.write('fetching ' + this.rootUrl + whitespace(20) + "\n");
+    process.stdout.write('graphing ' + this.rootUrl + whitespace(20) + "\n");
   }
 }
 

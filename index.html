@@ -1,3 +1,50 @@
-<p>Type in a domain and path into the address bar e.g.</p>
-<pre>http://thiswebsite.com/twitter.com/ac94</pre>
-<p>The result will be returned as JSON</p>
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Node Social Graph</title>
+    <script>
+
+function getGraph() {
+  var url = document.getElementById('url'),
+      url = location.href + '?q=' + encodeURIComponent(url.value) + '&strict',
+      xhr = new XMLHttpRequest();
+
+  xhr.open("GET", url, true);
+  xhr.onreadystatechange = function(event){
+    if (xhr.readyState === 4) { // request complete
+      if (xhr.status === 200) { // done
+        renderGraph(JSON.parse(xhr.responseText));
+      } else { // fail
+        console.log(xhr.statusText);
+      }
+    }
+  };
+  xhr.send(null);
+}
+
+function renderGraph(links) {
+  var listElem = document.getElementById('list'),
+      listHTML = "";
+
+  links.forEach(function (link) {
+    listHTML += '<li><a href="' + link.url + '">' + link.title + '</a></li>';
+  });
+
+  listElem.innerHTML = listHTML;
+}
+
+    </script>
+  </head>
+  <body>
+    <h1>Node Social Graph</h1>
+    <p>Type in a domain and path into the address bar e.g.</p>
+    <pre>http://thiswebsite.com/twitter.com/ac94</pre>
+    <p>The result will be returned as JSON</p>
+    <p>Alternatively, enter a url below.</p>
+    <ul id="list"></ul>
+    <input type="text" id="url" />
+    <button onclick="getGraph()">Submit</button>
+  </body>
+</html>

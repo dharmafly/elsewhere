@@ -62,7 +62,7 @@ Page.prototype = {
       self.links = cached.links;
       self.favicon = cached.favicon;
       self.validate();
-      self.grapher.addPages(self.links, self.url);
+      self.addPages(self.links, self.url);
       self.status = "fetched";
       callback();
       return;
