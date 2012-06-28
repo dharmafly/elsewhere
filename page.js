@@ -1,7 +1,7 @@
-var _     = require('underscore')._,
+var _       = require('underscore')._,
     jsdom   = require('jsdom'),
     globals = require('./globals.js'),
-    cache   = {};
+    cache   = require('./cache.js');
 
 /**
  * The Page object. Stores important scraped information
@@ -29,12 +29,12 @@ Page.prototype = {
    * module's cache object then the chached copy is returned.
    */
   fetch: function (callback) {
-    var self = this;
+    var self = this,
+        cached;
 
     self.status = "fetching";
 
-    if (cache[self.url]) {
-      var cached = cache[self.url];
+    if (cached = cache.get(self.url)) {
       self.title = cached.title;
       self.links = cached.links;
       self.favicon = cached.favicon;
@@ -71,11 +71,11 @@ Page.prototype = {
         
         self.status = "fetched";
 
-        cache[self.url] = {
+        cache.set(self.url, {
           title   : self.title,
           links   : self.links,
           favicon : self.favicon
-        };
+        });
 
         callback(null, self);
       } else {
