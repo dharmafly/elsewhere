@@ -75,6 +75,7 @@ Grapher.prototype = {
   build: function (callback) {
     this.logFetching();
 
+
     this.pages[this.rootUrl] = new Page(this.rootUrl, this);
     this.fetchPages(callback);
   },
@@ -93,6 +94,7 @@ Grapher.prototype = {
 
       if (self.allFetched()) {
         // finished fetching all pages, execute callback.
+        self.revalidatePages();
         callback();
       } else {
         // some pages haven't been fetched yet, execute self again.
@@ -170,6 +172,16 @@ Grapher.prototype = {
 
     return _.all(statuses, function (status) {
       return status === "fetched" || status === "error";
+    });
+  },
+
+  /**
+   * Revalides every page. Neccessary because of the way
+   * pages are asyncronously fetched.
+   */
+  revalidatePages: function () {
+    _.each(this.pages, function (page) {
+      page.validate();
     });
   },
 

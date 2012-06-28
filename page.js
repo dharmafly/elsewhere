@@ -24,29 +24,6 @@ Page.prototype = {
   constructor: Page,
 
   /**
-   * If in strict mode will return true if this Page links
-   * back to a url in `this.grapher.validUrls`. If not in
-   * strict mode then always returns true.
-   */
-  validate: function () {
-    var self = this;
-
-    self.valid = _.any(self.grapher.validUrls, function (validUrl) {
-      return _.include(self.links, validUrl);
-    });
-
-    if (self.grapher.options.strict === false) {
-      self.valid = true;
-    }
-
-    if (self.valid && !_.include(self.grapher.validUrls, self.url)) {
-      self.grapher.validUrls.push(self.url);
-    }
-
-    return this.valid;
-  },
-
-  /**
    * Uses jsdom to scrape a page for 'rel=me' links, the title
    * of the page, and its favicon. If the page is already in
    * module's cache object then the chached copy is returned.
@@ -73,16 +50,25 @@ Page.prototype = {
     ],
     function(errors, window) {
       if (!errors) {
+        
+        // get links
         window.$("a[rel~=me]").each(function (i, elem) {
           if (elem.href.substring(0,1) !== '/') {
             self.links.push(elem.href);
           }
         });
 
+        // get the title
         self.title = window.document.title;
+
+        // get the favicon
         self.resolveFavicon(window);
-        self.validate();
-        self.addPages(self.links, self.url);
+
+        // validate the page
+        if (self.validate()) {
+          self.addPages(self.links, self.url);
+        }
+        
         self.status = "fetched";
 
         cache[self.url] = {
@@ -104,6 +90,41 @@ Page.prototype = {
   },
 
   /**
+   * If in strict mode will return true if this Page links
+   * back to a url in `this.grapher.validUrls`. If not in
+   * strict mode then always returns true.
+   */
+  validate: function () {
+    var self = this;
+
+    // if the grapher is in non-strict mode then this
+    // page is automatically valid.
+    if (self.grapher.options.strict === false) {
+      self.valid = true;
+    
+    // if this page's url is on the list of valid urls
+    // then it is valid.
+    } else if (_.include(self.grapher.validUrls, self.url)) {
+      self.valid = true;
+
+    // if this page contains any links that are on the list
+    // of valid urls then the page is valid
+    } else {
+      self.valid = _.any(self.grapher.validUrls, function (validUrl) {
+        return _.include(self.links, validUrl);
+      });
+    }
+
+    // if the page has been validated and is not already
+    // on the list of valid urls then add it to the list.
+    if (self.valid && !_.include(self.grapher.validUrls, self.url)) {
+      self.grapher.validUrls.push(self.url);
+    }
+
+    return self.valid;
+  },
+
+  /**
    * Used by `Page.fetch` to add new Page objects to the Grapher
    * for each link which has not yet been fetched.
    */
@@ -117,6 +138,11 @@ Page.prototype = {
     });
   },
 
+  /**
+   * Scrapes the favicon from the page if there is one,
+   * if not then defaults to /favicon.ico. Should always
+   * return a full URL.
+   */
   resolveFavicon: function (window) {
     var favicon   = window.$('link[rel="shortcut icon"]'),
         url       = require('url').parse(this.url),
