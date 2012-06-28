@@ -1,11 +1,11 @@
 var app      = require('http').createServer(handler),
     fs       = require('fs'),
     globals  = require('./globals.js'),
-    graphMod = require('./grapher.js'),
+    Grapher  = require('./grapher.js'),
     _        = require('underscore')._;
 
 function handler(req, res) {
-  var rtn = [], grapher;
+  var rtn = [], grapher, url, options;
   
   // if the request if for a favicon, ignore it.
   if (req.url === '/favicon.ico') {
@@ -28,10 +28,10 @@ function handler(req, res) {
   var args = require('url').parse(req.url, true).query;
 
   if (_.isEmpty(args)) {
-    grapher = new graphMod.Grapher('http:/'+req.url, {strict:true});
+    url = 'http:/' + req.url;
+    options = {strict:true};
   } else {
-    var urlBits = require('url').parse(args.q, true),
-        url;
+    var urlBits = require('url').parse(args.q, true);
     
     if (urlBits.protocol) {
       url = urlBits.href;
@@ -39,13 +39,12 @@ function handler(req, res) {
       url = "http://" + urlBits.href;
     }
 
-    grapher = new graphMod.Grapher(url, {strict:(args.strict !== undefined)});
+    options = {strict:(args.strict !== undefined)};
   }
 
-  // Once grapher object is instantiated, build the graph.
-  grapher.build(function() {
+  Grapher.graph(url, options, function(graph) {
     res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
-    res.end(grapher.toJSON());
+    res.end(graph.toJSON());
   });
 }
 

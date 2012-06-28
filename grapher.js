@@ -95,7 +95,7 @@ Grapher.prototype = {
       if (self.allFetched()) {
         // finished fetching all pages, execute callback.
         self.revalidatePages();
-        callback();
+        callback(self);
       } else {
         // some pages haven't been fetched yet, execute self again.
         self.fetchPages(callback);
@@ -229,4 +229,14 @@ Grapher.prototype = {
   }
 }
 
+
+/**
+ * Handles creating the object and running build
+ */
+function graph (url, options, callback) {
+  var grapher = new Grapher(url, options);
+  grapher.build(callback);
+}
+
 exports.Grapher = Grapher;
+exports.graph = graph;
