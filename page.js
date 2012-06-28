@@ -91,11 +91,11 @@ Page.prototype = {
           favicon : self.favicon
         };
 
-        callback();
+        callback(null, self);
       } else {
         self.status = "error";
-        console.log(self.url, errors);
-        callback();
+        //console.log(self.url, errors);
+        callback(errors, self);
       }
 
       // release memory used by window object
