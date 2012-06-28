@@ -6,17 +6,21 @@
     <title>Node Social Graph</title>
     <script>
 
-function getGraph() {
+function getGraph(e) {
   var url    = document.getElementById('url'),
       strict = document.getElementById('strict'),
+      submit = document.getElementById('sub'),
       strict = strict.checked ? '&strict' : '',
       url    = location.href + '?q=' + encodeURIComponent(url.value) + strict,
       xhr    = new XMLHttpRequest();
 
+  submit.textContent = "Graphing";
+
   xhr.open("GET", url, true);
   xhr.onreadystatechange = function(event){
-    if (xhr.readyState === 4) { // request complete
-      if (xhr.status === 200) { // done
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        submit.textContent = "Graph";
         renderGraph(JSON.parse(xhr.responseText));
       } else { // fail
         console.log(xhr.statusText);
@@ -31,7 +35,9 @@ function renderGraph(links) {
       listHTML = "";
 
   links.forEach(function (link) {
-    listHTML += '<li><a href="' + link.url + '">' + (link.title || link.url) + '</a></li>';
+    listHTML += '<li><a target="_blank" href="view-source:' + link.url + '">';
+    listHTML += '<img src="' + link.favicon + '" width="16px" height="16px" />';
+    listHTML += (link.title || link.url) + '</a></li>';
   });
 
   listElem.innerHTML = listHTML;
@@ -45,10 +51,10 @@ function renderGraph(links) {
     <pre>http://localhost:8888/twitter.com/ac94</pre>
     <p>The result will be returned as JSON</p>
     <p>Alternatively, enter a url below.</p>
-    <ul id="list"></ul>
-    <input type="text" id="url" />
-    <input type="checkbox" id="strict" />
+    <ol id="list"></ol>
+    <input type="text" id="url" value="premasagar.com" />
+    <input type="checkbox" id="strict" checked />
     <label>strict</label>
-    <button onclick="getGraph()">Submit</button>
+    <button id="sub" onclick="getGraph()">Graph</button>
   </body>
 </html>
