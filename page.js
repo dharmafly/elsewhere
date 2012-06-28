@@ -38,8 +38,13 @@ Page.prototype = {
       self.title = cached.title;
       self.links = cached.links;
       self.favicon = cached.favicon;
-      self.validate();
-      self.addPages(self.links, self.url);
+      //self.validate();
+      //self.addPages(self.links, self.url);
+
+      if (self.validate()) {
+        self.addPages(self.links, self.url);
+      }
+
       self.status = "fetched";
       callback();
       return;
@@ -59,7 +64,7 @@ Page.prototype = {
         });
 
         // get the title
-        self.title = window.document.title;
+        self.title = window.document.title.replace(/(\r\n|\n|\r)/gm,"").trim();
 
         // get the favicon
         self.resolveFavicon(window);
