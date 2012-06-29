@@ -1,52 +1,9 @@
 var _       = require('underscore')._,
     globals = require('./globals.js'),
-    Page    = require('./page.js').Page;
+    Page    = require('./page.js').Page,
+    fn      = require('./functions.js');
 
 _.mixin(require('underscore.deferred'));
-
-/**
- * Returns whitespace as long as the provided
- * number of times
- */
-function whitespace (numberOfCharacters) {
-  return new Array(numberOfCharacters).join(" ");
-}
-
-/**
- * Function for determining if two URLs are identical.
- * Ignores 'www' and trailing slashes.
- * Treats 'http' and 'https' the same.
- */
-function sameUrl (url1, url2) {
-
-  function removeWWW (a) {
-    return a.search('www') !== -1 ? a.substring(0,7) + 
-      a.substring(11,a.length) : a;
-  }
-
-  function removeTrailingSlash (a) {
-    return a[a.length-1] === "/" ? a.substring(0,a.length-1) : a;
-  }
-
-  function removeProtocol (a) {
-    return a[4] === ":" ? a.substring(5) : 
-           a[5] === ":" ? a.substring(6) : a;
-  }
-
-  // remove www if www is present
-  url1 = removeWWW(url1);
-  url2 = removeWWW(url2);
-
-  // remove trailing slash if one is present
-  url1 = removeTrailingSlash(url1);
-  url2 = removeTrailingSlash(url2);
-
-  // remove protocol of http or https
-  url1 = removeProtocol(url1);
-  url2 = removeProtocol(url2);
-
-  return url1 === url2;
-}
 
 /**
  * The Graphing object uses page objects to scrape URLs for
@@ -143,7 +100,7 @@ Grapher.prototype = {
           newObj  = require('url').parse(url);
 
       return _.any(oldUrls, function (oldUrl) {
-        var same = sameUrl(url, oldUrl);
+        var same = fn.sameUrl(url, oldUrl);
 
         if (!same) {
           var oldObj = require('url').parse(oldUrl);
@@ -207,7 +164,7 @@ Grapher.prototype = {
 
     process.stdout.write('crawled  ' + 
       fetchedCount + '/' + statuses.length + 
-      " : " + this.rootUrl + whitespace(20) + "\r");
+      " : " + this.rootUrl + fn.whitespace(20) + "\r");
   },
 
   /**
@@ -225,7 +182,7 @@ Grapher.prototype = {
    * building the graph.
    */
   logFetching: function () {
-    process.stdout.write('graphing ' + this.rootUrl + whitespace(20) + "\n");
+    process.stdout.write('graphing ' + this.rootUrl + fn.whitespace(20) + "\n");
   }
 }
 

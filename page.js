@@ -1,7 +1,8 @@
 var _       = require('underscore')._,
     globals = require('./globals.js'),
     cache   = require('./cache.js'),
-    scraper = require('./scraper.js');
+    scraper = require('./scraper.js'),
+    fn      = require('./functions.js');
 
 /**
  * The Page object. Stores important scraped information
@@ -72,7 +73,9 @@ Page.prototype = {
     // of valid urls then the page is valid
     } else {
       self.valid = _.any(self.grapher.validUrls, function (validUrl) {
-        return _.include(self.links, validUrl);
+        return _.any(self.links, function (link) {
+          return fn.sameUrl(link, validUrl);
+        });
       });
     }
 
