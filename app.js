@@ -1,7 +1,7 @@
 var app      = require('http').createServer(handler),
     fs       = require('fs'),
-    globals  = require('./globals.js'),
-    Grapher  = require('./grapher.js'),
+    globals  = require('./lib/globals.js'),
+    Grapher  = require('./lib/grapher.js'),
     _        = require('underscore')._;
 
 function handler(req, res) {
@@ -16,7 +16,7 @@ function handler(req, res) {
   // if the root is requested then display instructions.
   if (req.url === '/') {
     res.writeHead(200, {'Content-Type': 'text/html'});
-    fs.readFile('index.html', function (err, page) {
+    fs.readFile('./static/index.html', function (err, page) {
       if (err) throw err;
       res.end(page);
     });
