@@ -191,8 +191,16 @@ Grapher.prototype = {
  * Handles creating the object and running build
  */
 function graph (url, options, callback) {
-  var grapher = new Grapher(url, options);
-  grapher.build(callback);
+  var grapher  = new Grapher(url, options),
+      deferred = _.Deferred(),
+      promise  = deferred.promise();
+
+  grapher.build(function (graph) {
+    if (callback) callback(graph);
+    deferred.resolve(graph);
+  });
+
+  return promise;
 }
 
 exports.Grapher = Grapher;
