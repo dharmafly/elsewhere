@@ -7,8 +7,19 @@ Simply, you provide it with a URL and the Grapher with crawl it for `rel=me` lin
 
 Once all crawled links have been followed the Grapher will return a _graph_ of what it found as a JSON array.
 
+Setup
+----------------
+
+Once you've cloned node-socialgraph and you're in its directory run
+
+    npm install
+
 Usage
 ----------------
+
+To run the example server run
+
+    bin/node-socialgraph
 
 ### Querying methods.
 

@@ -1,20 +1,20 @@
 {
   "author": "Dharmafly (dharmafly.com)",
   "name": "node-socialgraph",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "repository": {
     "type": "git",
     "url": "git://github.com/dharmafly/node-socialgraph.git"
   },
-  "main": "app.js",
+  "main": "index",
   "dependencies": {
     "jsdom":"0.2.14",
     "underscore":"1.3.3",
-    "underscore.deferred":"0.12.2"
+    "underscore.Deferred":"0.1.3"
   },
   "devDependencies": {},
   "optionalDependencies": {},
   "engines": {
-    "node": "*"
+    "node": ">= 0.6.5"
   }
 }
