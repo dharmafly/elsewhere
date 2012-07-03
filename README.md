@@ -14,14 +14,25 @@ Once you've cloned node-socialgraph and you're in its directory run
 
     npm install
 
-Usage
+Demo
 ----------------
 
 To run the example server run
 
     bin/node-socialgraph
+    
+Usage
+----------------
 
-### Querying methods.
+node-socialgraph has both a programmatic JavaScript interface via the `grapher` module as well as a HTTP interface.
+
+### Using Grapher
+
+`var grapher = require('node-socialgraph').grapher`
+
+### Using the HTTP interface
+
+#### Querying methods.
 
 Start the server and provide the root URL with the domain and path that you wish to search for rel=me links. E.g.
 
@@ -31,7 +42,7 @@ Using a query string your request should look like this.
 
     GET http://localhost:8888/?q=http%3A%2F%2Ftwitter.com%2Fpremasagar
 
-### Strict Mode
+#### Strict Mode
 
 Strict mode will only return pages that contain a link or links back to a valid page. 
 
@@ -43,7 +54,7 @@ Requests made using the path method are made in strict mode, however when using 
 
 Requests made in non-strict mode will not check for links back to valid pages and instead return every page that was crawled.
 
-### Response 
+#### Response 
 
 This will return a bit of JSON
 
