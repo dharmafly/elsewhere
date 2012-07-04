@@ -40,6 +40,6 @@ function handler(req, res) {
   });
 }
 
-app.listen(globals.APP_PORT, globals.APP_IP);
+app.listen(8888, 'localhost');
 
-console.log('App @ http://' + globals.APP_IP + ':' + globals.APP_PORT);
+console.log('App @ http://localhost:8888');
