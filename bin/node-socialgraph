@@ -2,7 +2,6 @@
 
 var app      = require('http').createServer(handler),
     fs       = require('fs'),
-    globals  = require('../lib/globals.js'),
     Grapher  = require('../lib/grapher.js'),
     _        = require('underscore')._;
 
