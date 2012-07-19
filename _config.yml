@@ -8,6 +8,8 @@ THEME: ocean
     
 ############ Optional extras
 
+GITHUB_ZIP_URL: https://github.com/dharmafly/node-socialgraph/zipball/master
+TWITTER_PROJECT_URL: https://twitter.com/dharmafly
 # javascript, css or html5
 LANG: javascript
 
