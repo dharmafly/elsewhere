@@ -3,14 +3,14 @@ body {
 	padding: 0;
 	margin: 0;
 	color: {{ page.copy_colour }};
-    background: {{ page.body_background_colour }};
-    background-image: url(./img/tile.png);
-    background-image: url(./img/tile.png) -moz-linear-gradient(left, {{ page.body_background_colour }} 0%, {{ page.background_mid_stop }} 50%, {{ page.body_background_colour }} 100%);
-    background-image: url(./img/tile.png) -webkit-gradient(linear, left top, right top, color-stop(0%,{{ page.body_background_colour }}), color-stop(50%,{{ page.background_mid_stop }}), color-stop(100%,{{ page.body_background_colour }}));
-    background-image: url(./img/tile.png) -webkit-linear-gradient(left, {{ page.body_background_colour }} 0%,{{ page.background_mid_stop }} 50%,{{ page.body_background_colour }} 100%);
-    background-image: url(./img/tile.png) -o-linear-gradient(left, {{ page.body_background_colour }} 0%,{{ page.background_mid_stop }} 50%,{{ page.body_background_colour }} 100%);
-    background-image: url(./img/tile.png) -ms-linear-gradient(left, {{ page.body_background_colour }} 0%,{{ page.background_mid_stop }} 50%,{{ page.body_background_colour }} 100%);
-    background-image: url(./img/tile.png) linear-gradient(left, {{ page.body_background_colour }} 0%,{{ page.background_mid_stop }} 50%,{{ page.body_background_colour }} 100%);
+  background: {{ page.body_background_colour }};
+  background-image: url(./img/tile.png);
+  background-image: url(./img/tile.png) -moz-linear-gradient(left, {{ page.body_background_colour }} 0%, {{ page.background_mid_stop }} 50%, {{ page.body_background_colour }} 100%);
+  background-image: url(./img/tile.png) -webkit-gradient(linear, left top, right top, color-stop(0%,{{ page.body_background_colour }}), color-stop(50%,{{ page.background_mid_stop }}), color-stop(100%,{{ page.body_background_colour }}));
+  background-image: url(./img/tile.png) -webkit-linear-gradient(left, {{ page.body_background_colour }} 0%,{{ page.background_mid_stop }} 50%,{{ page.body_background_colour }} 100%);
+  background-image: url(./img/tile.png) -o-linear-gradient(left, {{ page.body_background_colour }} 0%,{{ page.background_mid_stop }} 50%,{{ page.body_background_colour }} 100%);
+  background-image: url(./img/tile.png) -ms-linear-gradient(left, {{ page.body_background_colour }} 0%,{{ page.background_mid_stop }} 50%,{{ page.body_background_colour }} 100%);
+  background-attachment: fixed;
 }
 
 i, em {
@@ -109,6 +109,9 @@ pre code .comment              { color: #75715E; }
 	height: 0;
 }
 
+.ltIE9 .content section {
+  clear:left;
+}
 
 pre {
   position: relative;
@@ -127,6 +130,10 @@ pre {
   -moz-box-shadow:    4px 4px 5px rgba(0, 0, 0, 0.45) inset;
   -o-box-shadow:    4px 4px 5px rgba(0, 0, 0, 0.45) inset;
   box-shadow:         4px 4px 5px rgba(0, 0, 0, 0.45) inset;
+}
+
+section pre.hasEditor {
+  padding-bottom: 3.5em;
 }
 
 pre code {
@@ -216,7 +223,7 @@ section.overview a {
 section.overview a:hover,
 section.overview a:focus,
 section.overview a:active {
-    color:{{ page.link_colour }};
+    color:{{ page.link_colour_alt }};
     -webkit-transition : color 0.1s ease-in;
     -moz-transition : color 0.1s ease-in;
     -o-transition : color 0.1s ease-in;
@@ -288,22 +295,16 @@ section.overview a:active {
 }
 
 
-aside,
-#subnav,
-#subnav.off-left  {
-    // margin-left : -100%;
-}
-
 #subnav,
 #subnav.off-left  {
     opacity: 0;
 }
 
+
 #subnav.show-nav {
-    // margin-left : 0;
     opacity : 1;
     -webkit-transition: opacity 300ms ease-in-out;
-    -moz-transition opacity: margin-left 300ms ease-in-out;
+    -moz-transition: opacity 300ms ease-in-out;
     -o-transition: opacity 300ms ease-in-out;
     -ms-transition: opacity 300ms ease-in-out;
     transition: opacity 300ms ease-in-out;
@@ -318,7 +319,7 @@ aside,
     text-decoration: none;
     padding: 0 1.25em 0.55em 1em;
     background: transparent no-repeat 0em 1.2em;
-    background-image: url('data:image/svg+xml;base64,{{ page.subnav_underline }}');
+    background-image: url('data:image/svg+xml,%3Csvg%20width%3D%22403%22%20height%3D%228%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cline%20stroke%3D%22%23{{ page.subnav_underline }}%22%20stroke-width%3D%222%22%20x1%3D%224%22%20y1%3D%224%22%20x2%3D%22400%22%20y2%3D%224%22%20/%3E%3Ccircle%20fill%3D%22%23{{ page.subnav_underline }}%22%20cx%3D%224%22%20cy%3D%224%22%20r%3D%224%22%20/%3E%3C/svg%3E');
     -webkit-transition: background-position 0.3s ease-out, color 0.3s ease-out;
     -moz-transition: background-position 0.3s ease-out, color 0.3s ease-out;
     -o-transition: background-position 0.3s ease-out, color 0.3s ease-out;
@@ -326,11 +327,11 @@ aside,
 }
 
 #subnav a:hover {
-    background-position: 4em 1.2em;
-    -webkit-transition: background-position 0.3s ease-out, color 0.3s ease-out;
-    -moz-transition: background-position 0.3s ease-out, color 0.3s ease-out;
-    -o-transition: background-position 0.3s ease-out, color 0.3s ease-out;2
-    transition: background-position 0.3s ease-out, color 0.3s ease-out;
+    background-position: 2em 1.2em;
+    -webkit-transition: background-position 0.15s ease-out, color 0.15s ease-out;
+    -moz-transition: background-position 0.15s ease-out, color 0.15s ease-out;
+    -o-transition: background-position 0.15s ease-out, color 0.15s ease-out;2
+    transition: background-position 0.15s ease-out, color 0.15s ease-out;
 }
 
 aside,
@@ -357,25 +358,29 @@ section.content {
 
 section.content:after{
   content: "";
-    display: block;
-    width: 506px;
-    height: 231px;
-    margin: 0;
-    position: absolute;
-    bottom: 177px;
-    left: -336px;
-    z-index: -1;
-    background: transparent;
-    background-repeat: no-repeat;
-    background-position: left top;
-    background-image: url(./svg/{{ page.svg_asset }}) ;
-    -webkit-transform: rotate({{ page.svg_asset_rotation }});
-    -moz-transform: rotate({{ page.svg_asset_rotation }});
-    -ms-transform: rotate({{ page.svg_asset_rotation }});
-    -o-transform: rotate({{ page.svg_asset_rotation }});
-    transform: rotate({{ page.svg_asset_rotation }});
-    opacity: 0.2;
-    background-size: {{ page.svg_asset_size }}
+  display: block;
+  width: 506px;
+  height: 231px;
+  margin: 0;
+  position: absolute;
+  bottom: 177px;
+  left: -336px;
+  z-index: -1;
+  background: transparent;
+  background-repeat: no-repeat;
+  background-position: left top;
+  background-image: url(./svg/{{ page.svg_asset }}) ;
+  -webkit-transform: rotate({{ page.svg_asset_rotation }});
+  -moz-transform: rotate({{ page.svg_asset_rotation }});
+  -ms-transform: rotate({{ page.svg_asset_rotation }});
+  -o-transform: rotate({{ page.svg_asset_rotation }});
+  transform: rotate({{ page.svg_asset_rotation }});
+  opacity: 0.2;
+  background-size: {{ page.svg_asset_size }}
+}
+
+.ie section.content:after{
+  background-image: none;
 }
 
 section > h1 {
@@ -387,18 +392,26 @@ section > h1:hover .permalink {
 	visibility: visible;
 }
 
+@font-face{ 
+  font-family: 'Rail Model'; 
+  src: url('./ie/railmodelfont-webfont.eot?#iefix') format('embedded-opentype'); 
+}
+
 section .permalink {
 	text-decoration: none;
-	color: {{ page.greyed_out }};
 	float: left;
 	margin-right: 0.2em;
 	visibility: hidden;
-  font-family: Code2000, "DejaVu Sans", "DejaVu Sans Bold", "DejaVu Sans Bold Oblique", "DejaVu Sans Condensed", "DejaVu Sans Condensed Bold", "DejaVu Sans Condensed Bold Oblique", "DejaVu Sans Condensed Oblique", "DejaVu Sans Mono", "DejaVu Sans Mono Bold", "DejaVu Sans Oblique", "EversonMono", "EversonMono-Oblique", "Symbola"
+  position: relative;
+  bottom: 0;
+  font-family: "DejaVu Sans", "DejaVu Sans Bold", "DejaVu Sans Bold Oblique", "DejaVu Sans Condensed", "DejaVu Sans Condensed Bold", "DejaVu Sans Condensed Bold Oblique", "DejaVu Sans Condensed Oblique", "DejaVu Sans Mono", "DejaVu Sans Mono Bold", "DejaVu Sans Oblique", "EversonMono", "EversonMono-Oblique", "Symbola", "Free Serif", "Quivira", "Rail Model", Code2000 
 }
 
-section .permalink:hover {
-	color: {{ page.copy_colour }};
+.ltIE9 section .permalink {
+  font-family: "Rail Model";
 }
+
+
 
 .project-name {
     font-family: {{ page.font }}, serif;
@@ -463,8 +476,14 @@ section.quote:after {
   visibility: visible;
 }
 
+.ie section.quote:before,
+.ie section.quote:after {
+  background-image: none;
+}
+
 section.quote:after {
-  left: {{ page.quote_svg_right_pos }};
+  left: auto;
+  right: {{ page.quote_svg_right_pos }};
   -webkit-transform: {{ page.quote_svg_right_transform }};
   -moz-transform: {{ page.quote_svg_right_transform }};
   -ms-transform: {{ page.quote_svg_right_transform }};
@@ -502,6 +521,11 @@ article > h2 + p,
 
 
 /* Embedded Markdown Docs */
+
+.embedded :last-child {
+  margin-bottom: 0;
+}
+
 .embedded h1 {
 	font-size: 2.2em;
 }
@@ -634,20 +658,11 @@ button:active {
     height: 0;
     width: 24px;
     padding-top: 24px;
-    border-radius: 5px;
     display: block;
     overflow: hidden;
-    background: {{ page.icon_colour }};
-    background-image: url({{ page.show_subnav_icon }});
-    background-image: url({{ page.show_subnav_icon }}) -moz-linear-gradient(top, {{ page.icon_colour }} 0%, {{ page.icon_stop }} 100%);
-    background-image: url({{ page.show_subnav_icon }}) -webkit-gradient(linear, left top, left bottom, color-stop(0%,{{ page.icon_colour }}), color-stop(100%,{{ page.icon_stop }}));
-    background-image: url({{ page.show_subnav_icon }}) -webkit-linear-gradient(top, {{ page.icon_colour }} 0%,{{ page.icon_stop }} 100%);
-    background-image: url({{ page.show_subnav_icon }}) -o-linear-gradient(top, {{ page.icon_colour }} 0%,{{ page.icon_stop }} 100%);
-    background-image: url({{ page.show_subnav_icon }}) -ms-linear-gradient(top, {{ page.icon_colour }} 0%,{{ page.icon_stop }} 100%);
-    background-image: url({{ page.show_subnav_icon }}) linear-gradient(top, {{ page.icon_colour }} 0%,{{ page.icon_stop }} 100%);
+    background-image: url('data:image/svg+xml,%3Csvg%20width%3D%2223%22%20height%3D%2223%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%20%3Cstyle%3E%20line%2C%20circle%20%7B%20stroke%3A%20%23{{ page.show_subnav_icon }}%3B%20stroke-width%3A%202px%3B%20fill%3A%20%23{{ page.show_subnav_icon }}%3B%20%7D%20circle%20%7B%20stroke-width%3A%200%3B%20%7D%20%3C/style%3E%20%3Cline%20y2%3D%224%22%20x2%3D%2223%22%20y1%3D%224%22%20x1%3D%224%22%20/%3E%20%3Cline%20y2%3D%2211%22%20x2%3D%2223%22%20y1%3D%2211%22%20x1%3D%224%22%20/%3E%20%3Cline%20y2%3D%2218%22%20x2%3D%2223%22%20y1%3D%2218%22%20x1%3D%224%22%20/%3E%20%3Ccircle%20r%3D%222%22%20cy%3D%224%22%20cx%3D%224%22%20/%3E%20%3Ccircle%20r%3D%222%22%20cy%3D%2211%22%20cx%3D%224%22%20/%3E%20%3Ccircle%20r%3D%222%22%20cy%3D%2218%22%20cx%3D%224%22%20/%3E%20%3C/svg%3E');
     background-repeat: no-repeat;
     background-size: 80%;
-    border: 1px solid {{ page.icon_border }};
 }
 
 .show-subnav .icon{
@@ -656,9 +671,25 @@ button:active {
 }
 
 #navigation li.show-subnav {
-    float: left;
-    margin-top: -0.3em;
-    border-right:0;
+  float: left;
+  margin-top: -0.3em;
+  border-right:0;
+  background: {{ page.icon_colour }};
+  border: 1px solid {{ page.icon_border }};
+  border-radius: 5px;
+  background-image:  -moz-linear-gradient(top, {{ page.icon_colour }} 0%, {{ page.icon_stop }} 100%);
+  background-image:  -webkit-gradient(linear, left top, left bottom, color-stop(0%,{{ page.icon_colour }}), color-stop(100%,{{ page.icon_stop }}));
+  background-image:  -webkit-linear-gradient(top, {{ page.icon_colour }} 0%,{{ page.icon_stop }} 100%);
+  background-image:  -o-linear-gradient(top, {{ page.icon_colour }} 0%,{{ page.icon_stop }} 100%);
+  background-image:  -ms-linear-gradient(top, {{ page.icon_colour }} 0%,{{ page.icon_stop }} 100%);
+  background-image:  linear-gradient(top, {{ page.icon_colour }} 0%,{{ page.icon_stop }} 100%);
+  padding-left: 0;
+  padding-right: 0;
+  margin-right: 1em;
+}
+
+.ltIE9 #navigation li.show-subnav {
+  display: none;
 }
 
 #navigation.show-subnav-button li.show-subnav + li {
@@ -679,6 +710,7 @@ button:active {
 
 .run {
 	position: relative;
+  margin-bottom: 3em;
 }
 
 .run .eval {
@@ -720,90 +752,109 @@ button:active {
 
 aside li,
 .buttons .badge {
-    float: left;
-    margin-right: 1em;
+  float: left;
+  margin-right: 1em;
+  position:relative;
 }
 
 aside:after {
-    content: "";
-    display: block;
-    clear: both;
+  content: "";
+  display: block;
+  clear: both;
+  z-index:-1;
 }
+
 
 aside li  a,
 aside li  span,
-.buttons .badge {
-    width: 3.025em;
-    height: 0em;
-    border: 0.625em solid {{ page.content_hover_colour }};
-    border-radius: 3.025em;
-    overflow: hidden;
-    padding-top: 3.025em;
-    display:block;
-    background: url(./img/icon-sprite.png) no-repeat;
-    -webkit-transition: border-color 0.3s ease-out;
-    position:relative;
+.buttons .badge span {
+  width: 3em;
+  height: 0em;
+  border: 0.62em solid {{ page.content_hover_colour }};
+  border-radius: 3em;
+  -webkit-transition: border-color 0.3s ease-out;
+  -moz-transition: border-color 0.3s ease-out;
+  -ms-transition: border-color 0.3s ease-out;
+  -o-transition: border-color 0.3s ease-out;
+  transition: border-color 0.3s ease-out;
+  overflow: hidden;
+  padding-top: 3.025em;
+  display:block;
+  background: url(./img/icon-sprite.png) no-repeat;
+  -webkit-filter: grayscale(1);
+  filter:url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cfilter%20id%3D%22desaturate%22%3E%3CfeColorMatrix%20type%3D%22saturate%22%20values%3D%220%22/%3E%3C/filter%3E%3C/svg%3E#desaturate);
 }
 
-.buttons .badge {
-    border-width: 0.2em;
-    width: 2.5em;
-    border-radius: 2.5em;
-    padding-top: 2.5em;
+
+.buttons .badge span:hover,
+aside li a:hover,
+aside li span:hover {
+  filter:none; 
+  -webkit-filter: grayscale(0)
 }
 
-aside li  a:hover,
-.buttons .badge:hover {
-    border-color: {{ page.content_bg_colour }};
-    -webkit-transition: border-color 0.3s ease-out;
+.buttons .badge span {
+  border-width: 2px;
+  width: 2.5em;
+  border-radius: 2.5em;
+  padding-top: 2.5em;
 }
 
-aside li.github a {
-    background-position: -5px 0;
-}
+.ltIE9 aside li  a,
+.ltIE9 aside li  span,
+.ltIE9  .buttons .badge {
+  border-width: 0;
+} 
 
-aside li.twitter a{
-    background-position: -2px -128px;
-}
 
-aside li.code-javascript span {
-    background-position: -6px -246px;
-}
-aside li.code-html5 span {
-    background-position: 0 -460px;
-}
-aside li.code-css span {
-    background-position: 0 -552px;
-}
+.ltIE9 aside li.github a {  background-position: -4px 4px; background-color: white;}
+aside li.github a {  background-position: -4px 0; }
+aside li.twitter a{ background-position: -2px -128px; }
+aside li.code-javascript span { background-position: -6px -246px; }
+aside li.code-html5 span { background-position: -2px -457px; }
+aside li.code-css span { background-position: -2px -546px; }
 
-.buttons .badge.github {
-    background-position: 0px -359px;
-}
+.buttons .badge.github span {  background-position: 0px -359px; }
 
-.github a{
-  /* -webkit-filter: grayscale(1); */
-}
-
-aside .github a:after ,
-.buttons .badge.github:after {
+aside li:after ,
+.buttons .badge:after {
   content: "";
   display: block;
-  width: 3.0265em;
-  height: 3.0265em;
-  background-color: {{ page.badge_overlay }};
-  opacity: 0.5;
+  width: 4.25em;
+  height: 4.25em;
+  background: url('data:image/svg+xml,%3Csvg%20width%3D%2278%22%20height%3D%2278%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Ccircle%20fill%3D%22{{ page.badge_overlay }}%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2210%22%20cx%3D%2234%22%20cy%3D%2234%22%20r%3D%2229%22/%3E%3C/svg%3E') no-repeat left top;
+  opacity: 1;
+  transition: opacity .25s ease-in-out;
+  -moz-transition: opacity .25s ease-in-out;
+  -webkit-transition: opacity .25s ease-in-out;
+  -ms-transition: opacity .25s ease-in-out;
+  -o-transition: opacity .25s ease-in-out;
   position: absolute;
   top: 0;
   left: 0;
-  border-radius: 50%;
+  pointer-events: none;
 }
 
-.buttons .badge.github:after {
-  width: 2.5em;
-  height: 2.5em;
-  top: 0;
-  left: 0;
+
+.buttons .badge:after {
+  width: 2.75em;
+  height: 2.75em;
+  background: url('data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Ccircle%20fill%3D%22{{ page.badge_overlay }}%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%222%22%20cx%3D%2222%22%20cy%3D%2222%22%20r%3D%2221%22/%3E%3C/svg%3E') no-repeat left top;
+  /*background: url('data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg"><circle fill="{{ page.badge_overlay }}" stroke="{{ page.content_hover_colour}}" stroke-width="2" cx="22" cy="22" r="21"/></svg>') no-repeat left top;
+   background-size: 116% 116%; // attempt to scale other version */
 }
+
+
+.ltIE9 aside li:after {
+  display: none;
+  background-color: transparent;
+}
+
+.buttons .badge:hover:after,
+aside  li:hover:after  {
+  opacity: 0;
+}
+
 
 .ace_cursor.ace_hidden {
 	opacity: 0!important;
@@ -894,10 +945,19 @@ aside .github a:after ,
 	section pre {
 		margin-left: -5.6em;
 		margin-right: -5.6em;
-		padding-left: 5em;
+		padding-left: 2.5em;
 		padding-right: 2.5em;
     max-width:65em;
 	}
+  
+  section pre.hasEditor {
+		padding-left: 5em;
+    padding-bottom: 1.5em;
+	}
+  
+  section .embedded > ul pre {
+    margin-left: -7.2em;
+  }
 
   #navigation.float h1 {
     font-size: 2.6em;
@@ -934,34 +994,42 @@ aside .github a:after ,
   #navigation.show-subnav-button  li.show-subnav{
       display:block;
   }
+  
+  section.quote:after {
+    left: auto;
+    right: -webkit-calc({{ page.quote_svg_right_pos }} + {{ page.quote_svg_right_mod }});
+  }
 
 }
   
 @media (min-width:52em) {
 
-    #subnav.off-left  {
-       // margin-left : -100%;
-    }
+   
+  #subnav.off-left  {
+    margin-left: -100%;
+  }
 
-    aside,
-    #subnav,
-    #subnav.show-nav {
-      //  margin-left: 0;
-    }
+  #subnav.show-nav {
+    margin-left: 0;
+  }
 
     #subnav,
     #subnav.show-nav {
         opacity : 1;
     }
+  
+  section pre {
+    position: relative;
+    z-index: 10;
+  }
 
-
-    aside {
-        position: absolute;
-        top: 3em;
-        right: -10em;
-        margin: 0;
-        /*z-index:-1;*/
-    }
+  aside {
+    position: absolute;
+    top: 3em;
+    right: -10em;
+    margin: 0;
+    z-index: 5;
+  }
 
     aside li {
         float: none;
@@ -985,12 +1053,16 @@ aside .github a:after ,
         background: transparent;
         background-repeat: no-repeat;
         background-position: left top;
-        background-image: url({{ page.icon_stem }}) ;
+        background-image: url('data:image/svg+xml,%3Csvg%20width%3D%2290%22%20height%3D%22240%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%20%3Cstyle%3Epath%20%7B%20stroke%3A%09%23{{ page.icon_stem }}%3B%20fill%3A%20none%3B%20stroke-width%3A%209%3B%20%7D%3C/style%3E%20%3Cpath%20%20d%3D%22m77.66501%2C1.668c0%2C0%206%2C56.64099%20-15.09601%2C98c-18.13898%2C35.608%20-34.23698%2C67.72299%20-34.23698%2C67.72299s-22%2C40.66803%20-22%2C70%22/%3E%3C/svg%3E') ;
         position: absolute;
         bottom: -210px;
-        left: -43px;
+        left: -45px;
     }
-
+    
+    aside li:after {
+      /*background: url('data:image/svg+xml;utf-8,<svg width="78" height="78" xmlns="http://www.w3.org/2000/svg"><circle fill="{{ page.badge_overlay }}" stroke="{{ page.content_bg_colour }}" stroke-width="10" cx="34" cy="34" r="29"/></svg>') no-repeat left top;*/
+      background: url('data:image/svg+xml,%3Csvg%20width%3D%2278%22%20height%3D%2278%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Ccircle%20fill%3D%22{{ page.badge_overlay }}%22%20stroke%3D%22{{ page.badge_border }}%22%20stroke-width%3D%2210%22%20cx%3D%2234%22%20cy%3D%2234%22%20r%3D%2229%22/%3E%3C/svg%3E') no-repeat left top;
+    }
 
 }
 
@@ -1009,7 +1081,7 @@ aside .github a:after ,
 
 
 /* Force correct font loading behaviour to avoid FOUT in all browsers */
-/*
+
 .wf-loading h1,
 .wf-loading h2,
 .wf-loading h3,
@@ -1025,4 +1097,4 @@ aside .github a:after ,
   visibility: hidden;
 
 }
-*/
+

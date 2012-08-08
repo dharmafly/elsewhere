@@ -1,4 +1,3 @@
-
 /***********************************************
 
         Main page controller
@@ -12,7 +11,7 @@
 ***********************************************/
 
 
-if (document.querySelectorAll) {
+if (document.querySelectorAll && document.body.classList) {
   (function ($, $$) {
     var navigation = $('#navigation'),
         subnavId = 'subnav',
@@ -25,13 +24,20 @@ if (document.querySelectorAll) {
         isHeaderVisible = true,
         subnavContainer = subnav.clientWidth,
         halfContentWidth = content.clientWidth / 2,
-        subnavMargin = 30,
-        height, timer, throttle, subnavOffset, openSubnavOffset;
+        subnavMargin = 29,
+        subnavOffset = null, 
+        height, timer, subnavOffset, openSubnavOffset, subnavTopOffset;
+    
     
     // Conditionally load scripts based on device width
     var narrowScreen = GLOBAL.narrowScreen, 
         isltIE10 = GLOBAL.isltIE10, 
-        scripts = narrowScreen || isltIE10 ?  ["demo", "hijs"] : ["ace/ace", "ace/theme/theme-dharmafly", "ace/mode-javascript", "demo"]; // syntax highlighter for small devices, ACE editor otherwise
+        scripts;
+        
+        GLOBAL.noEditor = narrowScreen || isltIE10,
+        
+        
+        scripts = GLOBAL.noEditor ?  ["hijs", "demo"] : ["ace/ace", "ace/theme/theme-dharmafly", "ace/mode-javascript", "demo"]; // syntax highlighter for small devices, ACE editor otherwise
     
     (function loadScript(src) {
       
@@ -62,7 +68,13 @@ if (document.querySelectorAll) {
         subnavWidth = currentWidth > subnavWidth ? currentWidth : subnavWidth;
     }
     document.body.removeChild(subnavCloned);
-
+    
+    // Get subnav top offset
+    
+    subnavTopOffset = (height + subnav.offsetTop) + "px";
+    
+    onScroll(); // set the state of the page initial.
+    
     // Animate a scroll to the provided offset.
     function scrollTo(offset) {
     
@@ -95,42 +107,57 @@ if (document.querySelectorAll) {
         }
       })();
     }
+    
+    function throttle(fn, delay) {
+      var timer = null;
+      return function () {
+        var context = this, args = arguments;
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          fn.apply(context, args);
+        }, delay);
+      };
+    }
 
     // Show/Hide the navigation on scroll.
-    window.addEventListener('scroll', (function onScroll() {
+    window.addEventListener('scroll', throttle(onScroll, 1), false);
+    
+    
+    function onScroll() {
       
-      
-      if (throttle) {
-        return;
-      }
-
-      throttle = setTimeout(function () {
-        throttle = null;
-      }, 1000 / 60);
-      
-
       var isHidden = window.pageYOffset < offset;
       
       cloned[isHidden ? 'setAttribute' : 'removeAttribute']('hidden', '');
       subnav.classList[isHidden ? 'remove' : 'add']('float');
+      if(subnav.classList.contains("float")){
+        subnav.style.top = !subnav.style.top ? subnavTopOffset : subnav.style.top; // top position unset? use the calculated value, or leave it.
+      }else{
+        subnav.style.top = null;
+      }
       
       isHeaderVisible = isHidden;
-      resetSubnav();
+      resetSubnav("scroll");
   
       return onScroll;
-    })(), false);
+    }
     
     //  Move the navigation on resize to keep it's position relative to the browser port.
-    window.addEventListener('resize', resetSubnav);
+    window.addEventListener('resize', function(e){resetSubnav("resize")});
     
-    function resetSubnav() {
-        
-        
+    function resetSubnav(state) {
+    
         var halfWindowWidth = window.innerWidth / 2,
             navOffset = subnavWidth + subnavMargin + halfContentWidth,
             navOffScreen = navOffset > halfWindowWidth,
-            subnavOffset = navOffScreen ? (halfWindowWidth - subnavContainer - subnavMargin - halfContentWidth + subnavWidth ) + "px" : (halfWindowWidth - subnavContainer - halfContentWidth - subnavMargin) + "px", 
+            //subnavOffset = navOffScreen ? (halfWindowWidth - subnavContainer - subnavMargin - halfContentWidth + subnavWidth ) + "px" : (halfWindowWidth - subnavContainer - halfContentWidth - subnavMargin) + "px", 
             toggleClass = navOffScreen ? 'add' : 'remove';
+        
+
+        if(state === "resize") { // always calculate the offset on resize
+          subnavOffset =  getSubnavOffset() 
+        }else{
+           subnavOffset = subnavOffset ? subnavOffset : getSubnavOffset(); // if offset is already set, don't change it, otherwise get it.
+        }
         
         subnav.classList[toggleClass]('off-left');
         cloned.classList[toggleClass]('show-subnav-button');
@@ -167,15 +194,44 @@ if (document.querySelectorAll) {
         
     }, false);
     
+    function getSubnavOffset() {
+      var subnavOffset;
+      
+      if(window.getComputedStyle(subnav,null).getPropertyValue("position") == "absolute"){
+      
+        subnavOffset = jQuery(subnav).offset().left + "px";
+        
+      }else{
+      
+        content.appendChild(subnavCloned);
+        
+        subnavOffset = jQuery(subnavCloned).offset().left + "px";
+        
+        content.removeChild(subnavCloned)
+        
+      }
+      return subnavOffset;
+    }
+    
     function toggleSubnav() {
-     
+      var contentLeftPos;
       if(subnav.classList.contains("show-nav")){
         closeSubnav();
       }else{
         subnav.classList.add("show-nav");
-        openSubnavOffset = ((0 - subnavContainer) + (subnavWidth + subnavMargin))  + "px"; // stored value reapplied on scroll
+        contentLeftPos = (0 - content.offsetLeft + subnavWidth + (subnavMargin * 2));
+        
+        content.style.left = contentLeftPos + "px";
+        
+        content.appendChild(subnavCloned);
+        
+        openSubnavOffset = (jQuery(subnavCloned).offset().left + contentLeftPos) + "px"; // stored value reapplied on scroll
+        
+        if(isltIE10 || narrowScreen){
+          openSubnavOffset = ((0 - subnavContainer) + (subnavWidth + subnavMargin))  + "px"; 
+        }
+        content.removeChild(subnavCloned);
         subnav.style.left = subnav.classList.contains("float") ? openSubnavOffset : null; 
-        content.style.left = (0 - content.offsetLeft + subnavWidth + (subnavMargin * 2)) + "px";
       }
      
     }
@@ -185,6 +241,7 @@ if (document.querySelectorAll) {
       subnav.classList.remove("show-nav");
       subnav.style.left = null;
       content.style.left = null;
+      
       
     }
     
@@ -210,7 +267,7 @@ if (document.querySelectorAll) {
         window.scrollTo(0, offset);
 
         // Animate to the element.
-        var scrollYPos = section.parentNode.offsetTop - height - 20;
+        var scrollYPos = section.parentNode.offsetTop + height + 100;
         
         if(narrowScreen){
           window.scrollTo(0, scrollYPos); // No animation on small screens (long length), or on IE // TO DO fix IE to work with scrollTo #59
@@ -222,4 +279,3 @@ if (document.querySelectorAll) {
 
   })(function () { return document.querySelector.apply(document, arguments); });
 }
-
