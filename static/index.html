@@ -1,9 +1,16 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>Node Social Graph</title>
+    <style>
+    .invalid {
+      color:#CE0000;
+    }
+    .valid {
+      color:#00C900;
+    }
+    </style>
     <script>
 
 function getGraph(e) {
@@ -37,7 +44,8 @@ function renderGraph(links) {
   links.forEach(function (link) {
     listHTML += '<li><a target="_blank" href="view-source:' + link.url + '">';
     listHTML += '<img src="' + link.favicon + '" width="16px" height="16px" />';
-    listHTML += (link.title || link.url) + '</a></li>';
+    listHTML += (link.title || link.url) + '</a> - ';
+    listHTML += '<span class="' + (link.valid ? 'valid">valid' : 'invalid">invalid' ) + '</span></li>';
   });
 
   listElem.innerHTML = listHTML;
@@ -52,7 +60,7 @@ function renderGraph(links) {
     <p>The result will be returned as JSON</p>
     <p>Alternatively, enter a url below.</p>
     <ol id="list"></ol>
-    <input type="text" id="url" value="premasagar.com" />
+    <input type="text" id="url" value="lanyrd.com/profile/chrisnewtn" />
     <input type="checkbox" id="strict" checked />
     <label>strict</label>
     <button id="sub" onclick="getGraph()">Graph</button>
