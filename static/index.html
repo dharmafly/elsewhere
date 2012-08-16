@@ -10,24 +10,43 @@
     .valid {
       color:#00C900;
     }
+    #url {
+      width:250px;
+    }
+    #prog {
+      display:none;
+    }
     </style>
+  </head>
+  <body>
+    <h1>Node Social Graph</h1>
+    <p>Type in a domain and path into the address bar e.g.</p>
+    <pre>http://localhost:8888/twitter.com/ac94</pre>
+    <p>The result will be returned as JSON</p>
+    <p>Alternatively, enter a url below.</p>
+    <ol id="list"></ol>
+    <input type="text" id="url" value="lanyrd.com/profile/chrisnewtn" />
+    <input type="checkbox" id="strict" checked />
+    <label>strict</label>
+    <progress id="prog"></progress>
+    <!--<button id="sub" onclick="getGraph()">Graph</button>-->
     <script>
 
-function getGraph(e) {
+function getGraph (e) {
   var url    = document.getElementById('url'),
       strict = document.getElementById('strict'),
-      submit = document.getElementById('sub'),
+      prog   = document.getElementById('prog'),
       strict = strict.checked ? '&strict' : '',
       url    = location.href + '?q=' + encodeURIComponent(url.value) + strict,
       xhr    = new XMLHttpRequest();
 
-  submit.textContent = "Graphing";
+  prog.style.display = "block";
 
   xhr.open("GET", url, true);
   xhr.onreadystatechange = function(event){
     if (xhr.readyState === 4) {
       if (xhr.status === 200) {
-        submit.textContent = "Graph";
+        prog.style.display = "none";
         renderGraph(JSON.parse(xhr.responseText));
       } else { // fail
         console.log(xhr.statusText);
@@ -37,7 +56,7 @@ function getGraph(e) {
   xhr.send(null);
 }
 
-function renderGraph(links) {
+function renderGraph (links) {
   var listElem = document.getElementById('list'),
       listHTML = "";
 
@@ -51,18 +70,10 @@ function renderGraph(links) {
   listElem.innerHTML = listHTML;
 }
 
+document.getElementById('url').onkeydown = function (e) {
+  if (e.keyCode === 13) getGraph();
+}
+
     </script>
-  </head>
-  <body>
-    <h1>Node Social Graph</h1>
-    <p>Type in a domain and path into the address bar e.g.</p>
-    <pre>http://localhost:8888/twitter.com/ac94</pre>
-    <p>The result will be returned as JSON</p>
-    <p>Alternatively, enter a url below.</p>
-    <ol id="list"></ol>
-    <input type="text" id="url" value="lanyrd.com/profile/chrisnewtn" />
-    <input type="checkbox" id="strict" checked />
-    <label>strict</label>
-    <button id="sub" onclick="getGraph()">Graph</button>
   </body>
 </html>
