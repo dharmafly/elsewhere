@@ -61,10 +61,18 @@ function renderGraph (links) {
       listHTML = "";
 
   links.forEach(function (link) {
-    listHTML += '<li><a target="_blank" href="view-source:' + link.url + '">';
+    listHTML += '<li><a target="_blank" title="' + link.links.join("\n") + '"';
+    listHTML += ' href="view-source:' + link.url + '">';
     listHTML += '<img src="' + link.favicon + '" width="16px" height="16px" />';
-    listHTML += (link.title || link.url) + '</a> - ';
-    listHTML += '<span class="' + (link.valid ? 'valid">valid' : 'invalid">invalid' ) + '</span></li>';
+    listHTML += (link.title || link.url) + '</a>';
+
+    if (link.valid === undefined) {
+      listHTML += '</li>';
+    } else {
+      listHTML += ' - <span class="' + (link.valid ? 'valid">valid' : 'invalid">invalid' ) + '</span></li>';
+    }
+
+    
   });
 
   listElem.innerHTML = listHTML;
