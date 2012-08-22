@@ -67,11 +67,11 @@ function renderGraph (links) {
     listHTML += (link.title || link.url) + '</a>';
 
     if (link.verified === undefined) {
-      listHTML += '</li>';
+      listHTML += ' ' + link.level + '</li>';
     } else {
       listHTML += ' - <span class="' + (link.verified 
         ? 'verified">verified' 
-        : 'unverified">unverified' ) + '</span></li>';
+        : 'unverified">unverified' ) + '</span> ' + link.level + '</li>';
     }
 
     
