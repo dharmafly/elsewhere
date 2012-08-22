@@ -4,10 +4,10 @@
     <meta charset="utf-8" />
     <title>Node Social Graph</title>
     <style>
-    .invalid {
+    .unverified {
       color:#CE0000;
     }
-    .valid {
+    .verified {
       color:#00C900;
     }
     #url {
@@ -66,10 +66,12 @@ function renderGraph (links) {
     listHTML += '<img src="' + link.favicon + '" width="16px" height="16px" />';
     listHTML += (link.title || link.url) + '</a>';
 
-    if (link.valid === undefined) {
+    if (link.verified === undefined) {
       listHTML += '</li>';
     } else {
-      listHTML += ' - <span class="' + (link.valid ? 'valid">valid' : 'invalid">invalid' ) + '</span></li>';
+      listHTML += ' - <span class="' + (link.verified 
+        ? 'verified">verified' 
+        : 'unverified">unverified' ) + '</span></li>';
     }
 
     
