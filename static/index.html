@@ -47,7 +47,7 @@ function getGraph (e) {
     if (xhr.readyState === 4) {
       if (xhr.status === 200) {
         prog.style.display = "none";
-        renderGraph(JSON.parse(xhr.responseText));
+        renderGraph(JSON.parse(xhr.responseText).results);
       } else { // fail
         console.log(xhr.statusText);
       }
