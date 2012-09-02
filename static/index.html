@@ -62,7 +62,9 @@ function renderGraph (links) {
 
   links.forEach(function (link) {
     if (link === null) return;
-    listHTML += '<li><a target="_blank" title="' + link.links.join("\n") + '"';
+    listHTML += '<li><a target="_blank" title="' + 
+    link.outboundLinks.verified.join("\n") + 
+    link.outboundLinks.unverified.join("\n") + '"';
     listHTML += ' href="view-source:' + link.url + '">';
     listHTML += '<img src="' + link.favicon + '" width="16px" height="16px" />';
     listHTML += (link.title || link.url) + '</a>';
