@@ -14,9 +14,9 @@ TWITTER_PROJECT_URL: https://twitter.com/dharmafly
 LANG: javascript
 
 # Add your project's scripts here to be available to any examples
-SCRIPTS:
-- src: https://raw.github.com/dharmafly/jquery.promises/master/image.js
-- src: https://raw.github.com/dharmafly/jquery.promises/master/timer.js
+#SCRIPTS:
+#- src: https://raw.github.com/dharmafly/jquery.promises/master/image.js
+#- src: https://raw.github.com/dharmafly/jquery.promises/master/timer.js
 
 REFERENCE_LINK_TEXT: "Complete documentation can be found here:"
 
