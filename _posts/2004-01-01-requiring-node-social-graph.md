@@ -1,5 +1,6 @@
 ---
 category: reference
+heading: Requiring Node Social Graph
 ---
 At present Node Social Graph is not on NPM you you'll have to download it and unzip it into the `node_modules` directory of your node project yourself.
 

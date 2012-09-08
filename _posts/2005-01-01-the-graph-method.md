@@ -1,5 +1,6 @@
 ---
 category: reference
+heading: The Graph Method
 ---
 The `graph` method takes the folloing three parameters.
 
