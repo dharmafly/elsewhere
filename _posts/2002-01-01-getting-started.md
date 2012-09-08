@@ -2,20 +2,15 @@
 category: overview
 heading: Getting Started
 ---
-Starting with {{ site.PROJECT_NAME }}
-=====================
+Node Social Graph requires [Node.js][node] that you will need to have installed before you can follow the instructions below. 
 
-{{ site.PROJECT_NAME }} requires an up-to-date installation of [Node.js](http://nodejs.org/). 
-
-To get started first clone the project into a new directory.
+To download Node Social Graph and start the server, you just need run these commands in your terminal application.
 
     git clone git@github.com:dharmafly/node-socialgraph.git
-
-Then change into its directory and install its dependencies.
-
     cd node-socialgraph
     npm install
-
-Finally, to run an example app that makes use of the graph run this from the project's root directory.
-
     bin/node-socialgraph
+
+Now just head to `localhost:8888`, type in a url and hit enter. The initial crawl will take while as each page needs to be visited and cached. Once cached though, you should find it pretty snappy.
+
+[node]: http://nodejs.org/
