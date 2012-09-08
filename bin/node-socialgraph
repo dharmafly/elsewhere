@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
-var app      = require('http').createServer(handler),
-    fs       = require('fs'),
-    Grapher  = require('../lib/grapher.js'),
-    _        = require('underscore')._;
+var app     = require('http').createServer(handler),
+    fs      = require('fs'),
+    Grapher = require('../lib/grapher.js'),
+    cache   = require('../lib/cache.js'),
+    fn      = require('../lib/functions.js'),
+    _       = require('underscore')._;
 
 function handler(req, res) {
-  var rtn = [], grapher;
+  var rtn = [], grapher, cacheKey, queryUrl, options;
 
   // if the request if for a favicon, ignore it.
   if (req.url === '/favicon.ico') {
@@ -24,19 +26,65 @@ function handler(req, res) {
     return;
   }
 
-  // get the query object
+  // build the url that socialgraph will query against
   var query = require('url').parse(req.url, true).query;
 
   if (_.isEmpty(query)) {
-    grapher = Grapher.graph('http:/' + req.url, {strict:true});
+    queryUrl = normalizeUrl(req.url.substring(1));
   } else {
-    grapher = Grapher.graphFromQuery(query);
+    if (query.url) {
+      queryUrl = normalizeUrl(query.url);
+    } else {
+      res.writeHead(400, {'Content-Type': 'application/json; charset=utf-8'});
+      var error = JSON.stringify({
+        errors: "'url' is a required parameter"
+      });
+      error = query.callback ? query.callback + '(' + error + ');' : error;
+      res.end(error);
+      return;
+    }
   }
 
-  grapher.then(function(graph) {
-    res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
-    res.end(graph.toJSONP(query.callback));
-  });
+  // build the options object
+  options = {
+    strict:(query.strict !== undefined)
+  };
+
+  // build the object that the cache will cache against
+  cacheKey = 'graph;';
+  cacheKey += options.strict ? 'strict;' : '';
+  cacheKey += queryUrl;
+
+  if (cache.has(cacheKey)) {
+    cache.fetch(cacheKey, function (errors, jsonGraph) {
+      respond(res, jsonGraph, query.callback);
+      console.log('from cache   : ' + queryUrl);
+    });
+  } else {
+    grapher = Grapher.graph(queryUrl, options);
+
+    grapher.then(function(graph) {
+      var json = graph.toJSON();
+      cache.set(cacheKey, json);
+      respond(res, json, query.callback);
+    });
+  }
+}
+
+function respond (res, json, callback) {
+  res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+  if (callback) {
+    res.end(callback + '(' + json + ');');
+  } else {
+    res.end(json);
+  }
+}
+
+function normalizeUrl (url) {
+  var urlBits = require('url').parse(url, true),
+      url     = fn.url.removeTrailingSlash(urlBits.href);
+
+  return urlBits.protocol ? url : "http://" + url;
 }
 
 app.listen(8888, 'localhost');
