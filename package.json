@@ -1,10 +1,10 @@
 {
   "author": "Dharmafly (dharmafly.com)",
-  "name": "node-socialgraph",
+  "name": "elsewhere",
   "version": "0.0.1-5",
   "repository": {
     "type": "git",
-    "url": "git://github.com/dharmafly/node-socialgraph.git"
+    "url": "git://github.com/dharmafly/elsewhere.git"
   },
   "main": "index",
   "dependencies": {
@@ -17,8 +17,8 @@
   "engines": {
     "node": ">= 0.8.1"
   },
-  "subdomain": "dharmafly.node-socialgraph",
+  "subdomain": "dharmafly.elsewhere",
   "scripts": {
-    "start": "bin/node-socialgraph"
+    "start": "bin/elsewhere"
   }
 }

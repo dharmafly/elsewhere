@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Node Social Graph</title>
+    <title>Elsewhere</title>
     <style>
     .unverified {
       color:#CE0000;
@@ -19,17 +19,16 @@
     </style>
   </head>
   <body>
-    <h1>Node Social Graph</h1>
-    <p>Type in a domain and path into the address bar e.g.</p>
-    <pre>http://localhost:8888/twitter.com/ac94</pre>
-    <p>The result will be returned as JSON</p>
-    <p>Alternatively, enter a url below.</p>
+    <h1>Elsewhere</h1>
+    <p>You can against query the server directly with default settings like so:</p>
+    <pre>http://localhost:8888/twitter.com/premasagar</pre>
+    <p>The result will be returned as JSON.</p>
+    <p>Alternatively, just enter a url below and hit enter to get a nice list of links.</p>
     <ol id="list"></ol>
     <input type="text" id="url" value="lanyrd.com/profile/chrisnewtn" />
     <input type="checkbox" id="strict" checked />
     <label>strict</label>
     <progress id="prog"></progress>
-    <!--<button id="sub" onclick="getGraph()">Graph</button>-->
     <script>
 
 function getGraph (e) {
