@@ -94,6 +94,8 @@ code {
 	color: {{ page.code_colour }};
 }
 
+/* Code highlighting theme for hijs */
+
 pre code .keyword              { color: #FAB204; }
 pre code .string, pre code .regexp { color: #E6DB74; }
 pre code .class, pre code .special { color: #F8F8F2; }
@@ -132,7 +134,7 @@ pre {
   box-shadow:         4px 4px 5px rgba(0, 0, 0, 0.45) inset;
 }
 
-section pre.hasEditor {
+section pre.runnable {
   padding-bottom: 3.5em;
 }
 
@@ -874,6 +876,14 @@ aside  li:hover:after  {
     overflow-x: auto !important;
 }
 
+  /* set scrolling on short height browsers */
+@media only screen and (min-height:20px)  and (max-height:520px) {
+  #subnav.show-nav {
+    overflow:auto; 
+    height:340px;
+  }
+}  
+
 
 @media (min-width:340px) {
 	#navigation {
@@ -950,9 +960,12 @@ aside  li:hover:after  {
     max-width:65em;
 	}
   
+  section pre.runnable {
+		padding-left: 63px;
+    padding-bottom: 1.5em;
+	}
   section pre.hasEditor {
 		padding-left: 5em;
-    padding-bottom: 1.5em;
 	}
   
   section .embedded > ul pre {

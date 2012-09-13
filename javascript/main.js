@@ -11,6 +11,21 @@
 ***********************************************/
 
 
+var QueryParameters = (function() {
+    var result = {};
+
+    if (window.location.search) {
+    
+        var params = window.location.search.slice(1).split("&");
+        for (var i = 0; i < params.length; i++) {
+            var tmp = params[i].split("=");
+            result[tmp[0]] = unescape(tmp[1]);
+        }
+    }
+
+    return result;
+}());
+
 if (document.querySelectorAll && document.body.classList) {
   (function ($, $$) {
     var navigation = $('#navigation'),
@@ -29,15 +44,19 @@ if (document.querySelectorAll && document.body.classList) {
         height, timer, subnavOffset, openSubnavOffset, subnavTopOffset;
     
     
+    // ********** Initialise
+    
     // Conditionally load scripts based on device width
     var narrowScreen = GLOBAL.narrowScreen, 
         isltIE10 = GLOBAL.isltIE10, 
         scripts;
         
-        GLOBAL.noEditor = narrowScreen || isltIE10,
+        // Ace is never loaded, unless ?editable=true (and this is a non-IE wide screen device)
+        GLOBAL.noEditor = narrowScreen || isltIE10 ? 
+                              true :
+                              QueryParameters.editable === "true" ? false : true;
         
-        
-        scripts = GLOBAL.noEditor ?  ["hijs", "demo"] : ["ace/ace", "ace/theme/theme-dharmafly", "ace/mode-javascript", "demo"]; // syntax highlighter for small devices, ACE editor otherwise
+       scripts = GLOBAL.noEditor ?  ["hijs", "demo"] : ["ace/ace", "ace/theme/theme-dharmafly", "ace/mode-javascript", "demo"]; // syntax highlighter for small devices, ACE editor otherwise
     
     (function loadScript(src) {
       
@@ -74,6 +93,8 @@ if (document.querySelectorAll && document.body.classList) {
     subnavTopOffset = (height + subnav.offsetTop) + "px";
     
     onScroll(); // set the state of the page initial.
+    
+    // ********** Helper functions
     
     // Animate a scroll to the provided offset.
     function scrollTo(offset) {
@@ -118,7 +139,9 @@ if (document.querySelectorAll && document.body.classList) {
         }, delay);
       };
     }
-
+    
+    // ********* Event functions 
+    
     // Show/Hide the navigation on scroll.
     window.addEventListener('scroll', throttle(onScroll, 1), false);
     
@@ -187,12 +210,15 @@ if (document.querySelectorAll && document.body.classList) {
           toggleSubnav();
             
         } else if (section) {
-            
-          animateScrollToLink(event, section);
+        
+          closeIfSubnavLink(event.target);
+          animateScrollToLink (event, section);
           
         }
         
     }, false);
+    
+    // ********* Helper functions 
     
     function getSubnavOffset() {
       var subnavOffset;
@@ -244,38 +270,41 @@ if (document.querySelectorAll && document.body.classList) {
       
       
     }
-    
-    function animateScrollToLink (event, section) {
-    
-        var parent = event.target.parentNode,
-          isSubnavLink = false;
-            
-        while(parent){
-          if (parent.id === subnavId){
-              isSubnavLink = true;
-              break;
-          }
-          parent =  parent.parentNode;
+      
+    function closeIfSubnavLink(link){
+      var parent = link.parentNode,
+        isSubnavLink = false;
+          
+      while(parent){
+        if (parent.id === subnavId){
+            isSubnavLink = true;
+            break;
         }
-        
-        if(isSubnavLink) {
-          closeSubnav()
-        }
-            
-        // Set the location hash and reset the browser scroll position.
-        window.location.hash = event.target.hash;
-        window.scrollTo(0, offset);
-
-        // Animate to the element.
-        var scrollYPos = section.parentNode.offsetTop + height + 100;
-        
-        if(narrowScreen){
-          window.scrollTo(0, scrollYPos); // No animation on small screens (long length), or on IE // TO DO fix IE to work with scrollTo #59
-        } else {
-          scrollTo(scrollYPos); 
-        }
-        event.preventDefault();
+        parent =  parent.parentNode;
+      }
+      
+      if(isSubnavLink) {
+        closeSubnav()
+      }
     }
+      
+    function animateScrollToLink (event, section) {
+      // Set the location hash and reset the browser scroll position.
+      window.location.hash = event.target.hash;
+      window.scrollTo(0, offset);
+
+      // Animate to the element.
+      var scrollYPos = section.parentNode.offsetTop + height + 100;
+      
+      //if(narrowScreen){
+      if(1){
+        window.scrollTo(0, scrollYPos); // No animation on small screens (long length), or on IE // TO DO fix IE to work with scrollTo #59
+      } else {
+        scrollTo(scrollYPos); 
+      }
+      event.preventDefault();
+    }
+    
 
   })(function () { return document.querySelector.apply(document, arguments); });
 }
