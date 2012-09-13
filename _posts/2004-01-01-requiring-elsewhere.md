@@ -1,0 +1,10 @@
+---
+category: reference
+heading: Requiring Elsewhere
+---
+At present Elsewhere is not on NPM you you'll have to download it and unzip it into the `node_modules` directory of your node project yourself.
+
+Once you have it installed you may require it and interact with it using the `graph` method.
+
+    var Grapher = require('elsewhere');
+    Grapher.graph('http://premasagar.com');
