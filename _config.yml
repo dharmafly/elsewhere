@@ -1,14 +1,14 @@
 # Your project's details
-PROJECT_NAME: Node Social Graph
+PROJECT_NAME: Elsewhere
 GITHUB_CURRENT_VERSION: 0.1
-GITHUB_PROJECT_URL: https://github.com/dharmafly/node-socialgraph
+GITHUB_PROJECT_URL: https://github.com/dharmafly/elsewhere
 
 # The style for your site (options: default, ocean)
 THEME: ocean
 
 ############ Optional extras
 
-GITHUB_ZIP_URL: https://github.com/dharmafly/node-socialgraph/zipball/master
+GITHUB_ZIP_URL: https://github.com/dharmafly/elsewhere/zipball/master
 TWITTER_PROJECT_URL: https://twitter.com/dharmafly
 # javascript, css or html5
 LANG: javascript
