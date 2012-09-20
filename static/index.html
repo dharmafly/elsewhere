@@ -35,7 +35,7 @@ function getGraph (e) {
   var url    = document.getElementById('url'),
       strict = document.getElementById('strict'),
       prog   = document.getElementById('prog'),
-      strict = strict.checked ? '&strict' : '',
+      strict = strict.checked ? '&strict=true' : '&strict=false',
       url    = location.href + '?url=' + encodeURIComponent(url.value) + strict,
       xhr    = new XMLHttpRequest();
 
