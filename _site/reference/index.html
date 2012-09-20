@@ -1,0 +1,282 @@
+
+
+
+
+
+
+
+    
+    
+
+
+
+<!doctype html>
+<!--[if IE 9]> <html class="ie" lang="en"> <![endif]-->
+<!--[if lt IE 9 ]> <html class="ie ltIE9" lang="en"> <![endif]-->
+<!--[if !IE ]><!--> <html lang="en"> <!--<![endif]-->
+		<head>
+			<meta charset="utf-8" />
+			<meta name="viewport" content="width=device-width,initial-scale=0.75" />
+			<title>Elsewhere</title>
+        <script type="text/javascript">
+    WebFontConfig = {
+        google: {
+            families: [
+                'Lato:400,700,400italic:latin',
+                'Advent+Pro::latin',
+                 'Inconsolata::latin'
+            ]
+        }
+    };
+    (function() {
+        var wf = document.createElement('script');
+        wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+          '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+        wf.type = 'text/javascript';
+        wf.async = 'true';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(wf, s);
+    })();
+</script>
+
+
+        <!--[if lt IE 9]>
+            <script src="../javascript/html5shiv.js"></script>
+        <![endif]-->
+        <link href="../css/ocean.css" rel="stylesheet" />
+        <link rel="shortcut icon" href="../img/ocean-favicon.ico" />
+		</head>
+		<body>
+			<header>
+				<h1 class="title">
+                     <a href="../"> 
+                    Elsewhere
+                     </a> 
+                </h1>
+			</header>
+
+           <nav id="navigation">
+                <ul>
+                    <li class="show-subnav"><a href="#subnav" class="icon">Go to navigation for this page</a></li>
+                    
+                    <li>
+                        <a href="../">
+                        Overview
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="../reference">
+                        Reference
+                        </a>
+                    </li>
+                    
+                </ul>
+            </nav>
+
+
+            <section class="content">
+
+            
+
+
+<nav id="subnav">
+    <ul>
+    
+        <li><a href="#requiring-elsewhere">
+        
+            Requiring Elsewhere
+        
+        </a></li>
+    
+        <li><a href="#the-graph-method">
+        
+            The Graph Method
+        
+        </a></li>
+    
+        <li><a href="#global-configuration">
+        
+            Global Configuration
+        
+        </a></li>
+    
+    </ul>
+</nav>
+
+
+    
+    <section>
+        <h1><a id="requiring-elsewhere" class="permalink" href="#requiring-elsewhere">&#9875;</a>
+        
+            Requiring Elsewhere
+        
+        </h1>
+        <article class="embedded markdown">
+        <p>Elsewhere is available on <a href='https://npmjs.org/package/elsewhere'>NPM</a>. To install it just run:</p>
+
+<pre><code>npm install elsewhere</code></pre>
+
+<p>Once you have it installed you may require it and interact with it using the <code>graph</code> method.</p>
+
+<pre><code>var elsewhere = require(&#39;elsewhere&#39;);
+
+elsewhere.graph(&#39;http://premasagar.com&#39;);</code></pre>
+        </article>
+    </section>
+    
+
+    
+
+    
+
+
+
+ <aside>
+    <ul>
+        <li class="github"><a href="https://github.com/dharmafly/elsewhere" title="Elsewhere on Github">Elsewhere on Github</a></li>
+        
+        <li class="twitter"><a href="https://twitter.com/dharmafly" title="Elsewhere on Twitter">
+        Elsewhere on Twitter</a></li>
+        
+         
+            <li class="code-javascript" title="This is a JavaScript project"><span>This is a JavaScript project</span></li>
+           
+    </ul>
+</aside>
+
+
+    
+
+    
+    <section>
+        <h1><a id="the-graph-method" class="permalink" href="#the-graph-method">&#9875;</a>
+        
+            The Graph Method
+        
+        </h1>
+        <article class="embedded markdown">
+        <p>The <code>graph</code> method takes the following three parameters.</p>
+
+<p><strong>url</strong> This is the url that you wish to graph. The assumption is that it represents a person and has <code>rel=me</code> links to other urls also representing that person.</p>
+
+<p><strong>options</strong> (optional) This object literal contains a few properties used to configure the graph. These properties are:</p>
+
+<ul>
+<li>
+<p>strict (boolean) <code>true</code> for strict mode, <code>false</code> otherwise. Strict mode only returns urls that link back to either the url provided in the first parameter or another url that does.</p>
+</li>
+
+<li>
+<p>crawlLimit (integer) The number of links Elsewhere will follow without a successful verification before it abandons the chain. Defaults to 3.</p>
+</li>
+
+<li>
+<p>stripDeeperLinks (boolean) If set to <code>true</code> then Elsewhere will discard links that share a domain with another link or links at a shallower level. E.g. plus.google.com/{id} is kept, while plus.google.com/{id}/posts is discarded.</p>
+</li>
+</ul>
+
+<p><strong>callback</strong> (optional) The function provided as this parameter will be called once the graph has been completely constructed. The callback is provided with one parameter: a completed <code>Graph</code> object.</p>
+
+<p>Here are some examples of valid calls to the graph method.</p>
+
+<pre><code>var options = {
+  strict: true
+}
+
+var callback = function (graph) {};
+
+elsewhere.graph(&#39;http://premasagar.com&#39;, options, callback);
+
+elsewhere.graph(&#39;http://chrisnewtn.com&#39;, callback);
+
+elsewhere.graph(&#39;http://glennjones.net&#39;).then(callback);</code></pre>
+        </article>
+    </section>
+    
+
+    
+    <section>
+        <h1><a id="global-configuration" class="permalink" href="#global-configuration">&#9875;</a>
+        
+            Global Configuration
+        
+        </h1>
+        <article class="embedded markdown">
+        <p>Instead of using a local <code>options</code> object each time you call the graph method, you can also set options in the global options object.</p>
+
+<p>Options shared between the global options object and local objects that are set via the global object act as defaults for each call to the graph method, any options that are then provided directly to the graph method via a local object will override those of the global object.</p>
+
+<p>The two options shared between the global options object and local objects are <code>crawlLimit</code> and <code>stripDeeperLinks</code>.</p>
+
+<p><strong>logging</strong> (boolean) If set to <code>true</code> then Elsewhere will output the progress of the graph construction out to the terminal.</p>
+
+<p><strong>jsdomInstanceLimit</strong> (integer) The maximum allowed number of concurrent JSDom instances. Set too low and graphs to be constructed too slowly, too high and you&#8217;ll run out of memory. Defaults to 10.</p>
+
+<p><strong>crawlLimit</strong> (integer) The number of links Elsewhere will follow without a successful verification before it abandons the chain. Defaults to 3.</p>
+
+<p><strong>stripDeeperLinks</strong> (boolean) If set to <code>true</code> then Elsewhere will discard links that share a domain with another link or links at a shallower level. E.g. plus.google.com/{id} is kept, while plus.google.com/{id}/posts is discarded.</p>
+
+<p><strong>cacheLimit</strong> (integer) The maximum amount of time (in milliseconds) that the constituent links of a graph are kept in memory for. If you are running the Elsewhere server then this figure also goes for complete graphs as well.</p>
+
+<p>If you are running Elsewhere as a server then you may set these options directly in <code>lib/options.js</code>. Here is some example usage of the options object:</p>
+
+<pre><code>elsewhere.options.jsdomInstanceLimit = 20;
+
+elsewhere.options.logging = false;</code></pre>
+        </article>
+    </section>
+    
+
+
+                
+                <section class="quote">
+                    <blockquote>
+                        Ink is better than the best memory.
+                    </blockquote>
+                    <cite>Chinese proverb</cite>
+                </section>
+                
+
+            </section>
+
+
+
+            <footer>
+                <div>
+                    <p>
+                    <em>by</em> <a href="http://dharmafly.com">Dharmafly</a>
+                    </p>
+                </div>
+			</footer>
+      
+
+            <script type="text/javascript">
+              var GLOBAL = GLOBAL || {};
+              GLOBAL.narrowScreen = ((window.innerWidth > 0) ? window.innerWidth : screen.width) < 480;
+              GLOBAL.isltIE10 = false;
+              GLOBAL.relative_path = '../';
+            </script>
+            
+            <!--[if lt IE 10]> 
+              <script type="text/javascript">
+                GLOBAL.isltIE10 = true;
+              </script>
+            <![endif]-->
+              
+            <!--[if IE 9]>
+              <script src="../javascript/IEshims.js"></script>
+            <![endif]-->
+
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+      <script>window.jQuery || document.write('<script src="../javascript/jquery-1.7.1.min.js"><\/script>')</script>
+      
+			<!-- <script src="../javascript/jquery.js"></script> -->
+			<script src="../javascript/main.js"></script>
+
+            
+
+      
+      
+		</body>
+</html>
