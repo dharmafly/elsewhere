@@ -46,9 +46,14 @@ function handler(req, res) {
   }
 
   // build the options object
-  options = {
-    strict:(query.strict !== undefined)
-  };
+  options = {}
+  if (query.strict !== undefined) {
+    options.strict = query.strict;
+  } else {
+    options.strict = false;
+  }
+
+  console.log(query.strict, options.strict);
 
   // build the object that the cache will cache against
   cacheKey = 'graph;';
