@@ -10,7 +10,7 @@ THEME: ocean
 
 GITHUB_ZIP_URL: https://github.com/dharmafly/elsewhere/zipball/master
 TWITTER_PROJECT_URL: https://twitter.com/dharmafly
-# javascript, css or html5
+# options: javascript, css, html5
 LANG: javascript
 
 # Add your project's scripts here to be available to any examples
