@@ -1,6 +1,6 @@
----
-category: overview
+--- 
 heading: Changelog
+category: overview
 ---
 * v0.0.2
     - Tweaks to the signature of the graph method. Various internal changes.

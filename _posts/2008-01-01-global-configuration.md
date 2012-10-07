@@ -1,6 +1,6 @@
----
-category: reference
+--- 
 heading: Global Configuration
+category: reference
 ---
 Instead of using a local `options` object each time you call the graph method, you can also set options in the global options object.
 
