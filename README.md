@@ -51,14 +51,44 @@ The example code below builds a graph of `http://premasagar.com` and the [promis
     elsewhere.graph('http://premasagar.com').then(function (graph) {
       res.end(graph.toJSON());
     });
-
+ 
 The graph method accepts a variety of options. Two of these (`strict` & `stripDeeperLinks`) only govern what toJSON returns and do not affect the graph itself.
 
 * `strict`: If this is set to true then `toJSON` will not return url which are unverified. An unverified url is any url which does not link to any other verified url. The url provided to the graph method is inherently verified.
 * `stripDeeperLinks`: If set to true then urls at deeper path depths than that of the shallowest on the same domain will be discarded.
 * `crawlLimit` The number of urls that can be crawled in a row without any successful verifications before the crawling of any subsequent urls is abandoned.
+* `domainLimit` The number of links crawled within one domain before the crawling of any subsequent links is abandoned.
 
 The default options as well as some more low level options can be found in `lib/options.js`.
+
+### Overriding the internal cache
+
+Elsewhere use an in memory cache for the html it has fetched from web pages during its operation. The options object contains a property called cacheTimeLimit which can be use to set the refresh gap, by default it is set 360000ms equal to 1 hour. 
+
+You can also replace the cache with your own functionally if you provide an object contain the following interface:
+
+  {
+    function get (url) {
+      returns data
+    }
+
+    function has(url) {
+      returns true || false
+    }
+
+    function fetch (url, callback) {
+      fires callback(null, data);
+    }
+
+    function set(url, data) {
+      returns object
+    }
+
+  }
+
+Add the object to the options.cache property
+
+
 
 [node]: http://nodejs.org/
 [microformats]: http://microformats.org/wiki/rel-me

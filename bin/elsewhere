@@ -3,12 +3,11 @@
 var app     = require('http').createServer(handler),
     fs      = require('fs'),
     Grapher = require('../lib/grapher.js'),
-    cache   = require('../lib/cache.js'),
     fn      = require('../lib/functions.js'),
     _       = require('underscore')._;
 
 function handler(req, res) {
-  var rtn = [], grapher, cacheKey, queryUrl, options;
+  var rtn = [], grapher, queryUrl, options;
 
   // if the request if for a favicon, ignore it.
   if (req.url === '/favicon.ico') {
@@ -53,27 +52,12 @@ function handler(req, res) {
     options.strict = false;
   }
 
-  console.log(query.strict, options.strict);
 
-  // build the object that the cache will cache against
-  cacheKey = 'graph;';
-  cacheKey += options.strict ? 'strict;' : '';
-  cacheKey += queryUrl;
-
-  if (cache.has(cacheKey)) {
-    cache.fetch(cacheKey, function (errors, jsonGraph) {
-      respond(res, jsonGraph, query.callback);
-      console.log('from cache   : ' + queryUrl);
-    });
-  } else {
-    grapher = Grapher.graph(queryUrl, options);
-
-    grapher.then(function(graph) {
-      var json = graph.toJSON();
-      cache.set(cacheKey, json);
-      respond(res, json, query.callback);
-    });
-  }
+  grapher = Grapher.graph(queryUrl, options);
+  grapher.then(function(graph) {
+    respond(res, graph.toJSON(), query.callback);
+  });
+  
 }
 
 function respond (res, json, callback) {

@@ -35,11 +35,13 @@ function getGraph (e) {
   var url    = document.getElementById('url'),
       strict = document.getElementById('strict'),
       prog   = document.getElementById('prog'),
+      listElem = document.getElementById('list'),
       strict = strict.checked ? '&strict=true' : '&strict=false',
       url    = location.href + '?url=' + encodeURIComponent(url.value) + strict,
       xhr    = new XMLHttpRequest();
 
   prog.style.display = "block";
+  listElem.innerHTML = '';
 
   xhr.open("GET", url, true);
   xhr.onreadystatechange = function(event){
