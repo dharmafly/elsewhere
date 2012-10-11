@@ -147,14 +147,38 @@ dDocs = (function ($, $qS) { // jQuery and document.querySelector
     }
   }
   
+  function setPermalinkTopOffset(){
+    var permalinks = document.querySelectorAll('.permalink'),
+        navHeight = navEl.getBoundingClientRect().height,
+        margin = 20,
+        topOffset;
+    
+      
+    topOffset = narrowScreen ? 
+                  navHeight + navOffsetTop - margin
+                : navHeight + margin;
+    
+    for (var i = 0; i < permalinks.length; ++i) {
+      var permalink = permalinks[i];  
+      permalink.style.paddingTop = topOffset + 'px';
+      permalink.style.top = '-' + topOffset + 'px';
+    }
+      
+  }
+  
   // ---------------------
   
   // GLOBALS
-      
+  
+     
   var narrowScreen = GLOBAL.narrowScreen, 
+      // Why sniff for ipad? 
+      // It's to prevent iOS5 position fixed bugs, 
+      // rather than anything to do with width
+      isIPad = GLOBAL.isIPad, 
       navEl = $qS('#navigation'),
       header = $qS('header'),
-      headerHeight = navEl.offsetTop,
+      navOffsetTop = navEl.offsetTop,
       subnavId = 'subnav',
       subnavEl = $qS('#subnav'),
       content = $qS('section.content'),
@@ -175,7 +199,7 @@ dDocs = (function ($, $qS) { // jQuery and document.querySelector
         distance =  Math.abs(scrollYPos - window.pageYOffset);
     
     // the distance between link and anchor > x screen heights
-    if((distance > maxScrollDist) || narrowScreen){
+    if((distance > maxScrollDist)){
       // jump to anchor
       window.scrollTo(0, scrollYPos); 
       setLocationHash();
@@ -198,7 +222,7 @@ dDocs = (function ($, $qS) { // jQuery and document.querySelector
   
   // Scroll position > height of the header
   function isScrollGtHeader(){ 
-    return window.pageYOffset > headerHeight;
+    return window.pageYOffset > navOffsetTop;
   }
   
   // space on left of page < width of subnav 
@@ -261,6 +285,7 @@ dDocs = (function ($, $qS) { // jQuery and document.querySelector
     this.isOpen;
     this.timeout; 
     this.width = getLinkListWidth(el); 
+    this.height = this.el.getBoundingClientRect().height;
     // TO DO
     this.margin = 20;
     this.fixedLeftPos = this.getLeftPos();
@@ -288,6 +313,11 @@ dDocs = (function ($, $qS) { // jQuery and document.querySelector
                                     subnav.openPos : 
                                     subnav.fixedLeftPos
                                 : null;
+                                
+        // Set a fixed height on the subnav at the point
+        // the subnav is taller than the available space on-screen
+        subnav.setSubnavHeight();
+        
       }
       
     });   
@@ -302,6 +332,7 @@ dDocs = (function ($, $qS) { // jQuery and document.querySelector
       // otherwise it will sit in the same place when the browser resizes
       if(subnav.isScrollGtHeader){
         subnav.el.style.left = subnav.fixedLeftPos;
+        subnav.setSubnavHeight();
       } 
       
     });
@@ -312,8 +343,7 @@ dDocs = (function ($, $qS) { // jQuery and document.querySelector
       if(state !== subnav.isSubnavSqueezed){
         subnav.isSubnavSqueezed = state;   
         
-        navigation.setSubnavButtonState(state);
-        setClass(subnav.el, 'off-left', state);
+        subnav.updateSubnavView(state);
         
         // if there's enough room for the subnav and the subnav is open
         if(subnav.isOpen && subnav.isSubnavSqueezed === false){
@@ -323,6 +353,24 @@ dDocs = (function ($, $qS) { // jQuery and document.querySelector
       }
     });
     
+  };
+  
+  Subnav.prototype.updateSubnavView  = function updateSubnavView(state) {
+    navigation.setSubnavButtonState(state);
+    setClass(this.el, 'off-left', state);
+  };
+  
+  // Set a fixed height on the subnav at the point
+  // the subnav is taller than the available space on-screen
+  Subnav.prototype.setSubnavHeight  = function setSubnavHeight(setHeight) {
+    var availHeight = window.innerHeight - this.el.offsetTop - 10,
+        navHeight = narrowScreen ? navEl.offsetTop + navEl.clientHeight : 0;
+    
+    if((this.isScrollGtHeader || setHeight) && (this.height > availHeight)){
+      this.el.style.height = (availHeight - 20) + 'px';
+    }else{
+      this.el.style.height = null;
+    }
   };
   
   Subnav.prototype.getLeftPos  = function getLeftPos() {
@@ -338,30 +386,53 @@ dDocs = (function ($, $qS) { // jQuery and document.querySelector
     this.el.classList.add("show-nav");
     var subnav = this,  
         gutter = (window.innerWidth - contentWidth)/2;
-        
-    content.style.left = (this.width - gutter) + (this.margin * 2) + "px"; 
     
-    this.el.style.opacity = 0;
-        
-    // set open left position in model after the
-    // animation to open is complete
-    this.timeout = window.setTimeout(function(){
-      subnav.openPos = subnav.getLeftPos();
-      if(subnav.isScrollGtHeader){
-        // set the left pos if position fixed
-        subnav.el.style.left = subnav.openPos;
-      }
-      subnav.el.style.opacity = 1;
-    }, 309); 
-    
+    if(narrowScreen){
+      this.el.classList.add("show-nav-small");
+    }
+    else{  
+      content.style.left = (this.width - gutter) + (this.margin * 2) + "px"; 
+      this.el.style.opacity = 0;
+          
+      // set open left position in model after the
+      // animation to open is complete
+      this.timeout = window.setTimeout(function(){
+        subnav.openPos = subnav.getLeftPos();
+        if(subnav.isScrollGtHeader){
+          // set the left pos if position fixed
+          subnav.el.style.left = subnav.openPos;
+        }
+        subnav.el.style.opacity = 1;
+      }, 309); 
+    }
   };
   
   Subnav.prototype.close = function() {
     this.isOpen = false;
     this.el.classList.remove("show-nav");
-    content.style.left = null;
-    this.el.style.opacity = null;
-    clearTimeout(this.timeout);
+    if(narrowScreen){
+      this.el.classList.remove("show-nav-small");
+    } else {
+      content.style.left = null;
+      this.el.style.opacity = null;
+      clearTimeout(this.timeout);
+    }
+  };
+  
+  Subnav.prototype.setSelectSubnav = function() {
+  
+    var options = $(this.el).find('a').map(function(){
+      var link = this;
+      return $('<option>').attr('value',link.hash).text(link.innerHTML)[0];
+    })
+    
+    var $select = $('<select id="subnav-menu">').append(options);
+    
+    $select.on('change', function(){
+      window.location.hash = $(this).val();
+    });
+    
+    $(navEl).find('ul').append($select[0]);
   };
   
   Subnav.prototype.isAncestor = function(child){
@@ -384,36 +455,69 @@ dDocs = (function ($, $qS) { // jQuery and document.querySelector
   
   function init(){
   
+    
     navigation = new Navigation(navEl);
     subnav = new Subnav(subnavEl);
     
-    window.addEventListener('scroll', throttle(function(){
-      $.publish('scrollGtHeader', isScrollGtHeader());
-    } , 1), false);
+    // don't do transition of navigation on narrow screens
+    if(narrowScreen){
+      content.classList.add('content-small');
+      document.body.classList.add('narrowScreen');
+      // replaced by a non-visible select box (setSelectSubnav)
+      //subnav.setSubnavHeight(true); 
+      subnav.setSelectSubnav();
+    }
+    else{
     
-    window.addEventListener('resize', throttle(function(){
-      $.publish('subnavSqueezed', isSubnavSqueezed());
-      $.publish('windowResized');
-    } , 1), false);
+      
+      if(isIPad){
+        // always use a select as a dropdown on the ipad
+        subnav.setSelectSubnav();  
+        subnav.updateSubnavView(true);
+      }else{
+        
+        subnavEl.style.visibility = 'visible';
+        // publish resize events for setting subnav visibility
+        window.addEventListener('resize', throttle(function(){
+          $.publish('subnavSqueezed', isSubnavSqueezed());
+          $.publish('windowResized');
+        } , 1), false);
+      }
+      
+      
+      window.addEventListener('scroll', throttle(function(){
+        $.publish('scrollGtHeader', isScrollGtHeader());
+      } , 1), false);
+      
+    }
     
     window.addEventListener('load', function(){
       $.publish('subnavSqueezed', isSubnavSqueezed());
     });
     
+    /* document.body.addEventListener('orientationchange', function(){
+      subnav.setSubnavHeight(true);
+    }, false);*/
+    
     // Handle scroll between inter-document links.
     document.body.addEventListener('click', function (event) {
       var hashId = event.target.hash,
           anchor = hashId && $qS(hashId);
+      
+      // replaced by a non-visible select box (setSelectSubnav)
+      var selectNav = narrowScreen || isIPad;
        
       
       // open close subnav was clicked 
       if(getTargetId(hashId) === subnavId) {
-        event.preventDefault(); 
-        subnav.toggle();
+        event.preventDefault();
+        if(!selectNav){
+          subnav.toggle();
+        }
       } 
       // link within page was clicked
-      else if (anchor) {
-      
+      else if (anchor && !selectNav) {
+        
         event.preventDefault();
         
         if(subnav.isAncestor(event.target)){
@@ -428,6 +532,8 @@ dDocs = (function ($, $qS) { // jQuery and document.querySelector
     // -------
    
     setLogoPosition();
+    
+    setPermalinkTopOffset();
     
   };
   

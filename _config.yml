@@ -1,48 +1,49 @@
-# Your project's details
+# The project
 PROJECT_NAME: Elsewhere
 GITHUB_CURRENT_VERSION: 0.0.2
 GITHUB_PROJECT_URL: https://github.com/dharmafly/elsewhere
 
-# The style for your site (options: default, ocean)
-THEME: ocean
+# Site theme (options: forest, ocean, horus, seagrass, sundae)
+THEME: seagrass
 
-############ Optional extras
 
+############ Options
+
+# URLs
 GITHUB_ZIP_URL: https://github.com/dharmafly/elsewhere/zipball/master
 TWITTER_PROJECT_URL: https://twitter.com/dharmafly
-# options: javascript, css, html5
+
+# Primary language or technology (options: javascript, css, html5)
 LANG: javascript
 
-# Add your project's scripts here to be available to any examples
-#SCRIPTS:
-#- src: https://raw.github.com/dharmafly/jquery.promises/master/image.js
-#- src: https://raw.github.com/dharmafly/jquery.promises/master/timer.js
+# Documentation site scripts
+SCRIPTS:
 
+# Footer quote
+QUOTE:
+  quote: It is living and ceasing to live that are imaginary solutions. Existence is elsewhere. 
+  cite: Andre Breton
+
+# Site analytics
+GA_ID: UA-34978047-3
+
+
+############ Deprecated / Temporary
+
+# Link from overview to reference
 REFERENCE_LINK_TEXT: "Complete documentation can be found here:"
 
-# A quote to add at the footer of your project page
-QUOTE:
-  quote: Ink is better than the best memory.
-  cite: Chinese proverb
-
-# Your google analytics id
-GA_ID:
-
-##############
-
-# Page names -- paths should not be updated and
-# are currently hard-coded to match directory names / site categories.
-# (They're here as placeholders for future work to
-# allow new sections to be dynamically created)
+# Page names
+# In future, new site sections will be dynamically created.
+# The following paths are hard-coded to match directory names / site categories.
 sections:
  - path:
    name: Overview
  - path: reference
    name: Reference
 
-###############################
 
-# Jekyll options
+############ Jekyll options
 
 safe:        false
 auto:        false

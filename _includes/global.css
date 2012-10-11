@@ -181,9 +181,29 @@ header a,
 header a:hover,
 header a:focus,
 header a:active,
-footer a {
-    color: {{ page.highlight_colour }};
-    text-decoration: none;
+footer a,
+footer a:hover,
+footer a:focus,
+footer a:active{
+  {% if page.overview_inverse %}
+  color:{{ page.content_hover_colour }};
+  {% else %}
+  color: {{ page.highlight_colour }};
+  {% endif %}
+  text-decoration: none;
+}
+
+{% if page.overview_inverse %}
+header a,
+header a:hover,
+header a:focus,
+header a:active{
+  color:{{ page.copy_colour }};
+}
+{% endif %}
+
+footer {
+  padding: 2em;
 }
 
 footer p {
@@ -217,11 +237,7 @@ pre code {
 
 #navigation, section.overview {
 	background-color: {{ page.lowlight_background }};
-  {% if page.overview_inverse %}
-  color:{{ page.highlight_colour }};
-  {% else %}
   color:{{ page.lowlight_colour }};
-  {% endif %}
 }
 
 #navigation a{
@@ -240,13 +256,14 @@ section.overview a {
   {% endif %}
 }
   
+
 #navigation a:hover,
 #navigation a:focus,
 #navigation a:active,
 section.overview a:hover,
 section.overview a:focus,
 section.overview a:active {
-    color:{{ page.link_colour_alt }};
+    color:{{ page.nav_hover_color }};
     -webkit-transition : color 0.1s ease-in;
     -moz-transition : color 0.1s ease-in;
     -o-transition : color 0.1s ease-in;
@@ -260,7 +277,7 @@ section.overview a:active {
 	left: 0;
 	right: 0;
 	margin: 0;
-	box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.1);
 }
 
 #navigation.float h1 {
@@ -270,12 +287,11 @@ section.overview a:active {
     float: left;
     font-size: 1.8em;
     color: {{ page.highlight_colour }};
-    border-right:1px solid {{ page.nav_border_colour }};
     display: none; /* only shown above 35em */
 }
 
 #navigation.float h1 a {
-    color: {{ page.highlight_colour }};
+  color: {{ page.highlight_colour }};
 }
 
 #navigation.hidden {
@@ -284,20 +300,26 @@ section.overview a:active {
 
 #navigation ul {
 	margin-bottom: 0;
+  position: relative;
 }
 
 #navigation li {
   display: inline;
   padding-left: 1em;
   padding-right: 1em;
-  border-left:1px solid {{ page.nav_border_colour }};
-  border-right:1px solid {{ page.nav_border_colour }};
-  border-left-width:0;
   float: none;
+  border-left:1px solid {{ page.nav_border_colour }};
 }
 
-#navigation li:last-child{
-  border-right-width:0;
+#navigation li.show-subnav + li{
+  border-left-width:0px;
+  padding-left:0px;
+}
+
+#navigation h1.title + li,
+#navigation.show-subnav-button li.show-subnav + li{
+  border-left-width:1px;
+  padding-left: 1em;
 }
 
 #navigation a {
@@ -309,6 +331,9 @@ section.overview a:active {
     left: -42em;
     text-align: right;
     width: 40em;
+    overflow-y:auto; 
+    overflow-x:hidden; 
+    -webkit-overflow-scrolling: touch;
 }
 
 #subnav.fixed {
@@ -332,26 +357,45 @@ section.overview a:active {
     -o-transition: opacity 300ms ease-in-out;
     -ms-transition: opacity 300ms ease-in-out;
     transition: opacity 300ms ease-in-out;
+}  
+
+
+
+/* show the nav at small device widths
+*/
+#subnav.show-nav-small {
+  left: 0 !important;
+  background: {{ page.body_background_colour }};
+  z-index: 30;
+  position: fixed;
+  top: 7.5em;
+  width:auto;
+  -moz-box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.3);
+  -webkit-overflow-scrolling: touch; 
+  text-align:left;
 }
 
-/* Debug - no js show the nav at small device widths
-#subnav:focus {
-  left: -34px;
+#subnav-menu {
+  position: absolute;
   top: 0;
-  background: {{ page.content_bg_colour }};
-  border: 1px solid {{ page.body_background_colour }};
-  z-index: 30;
+  left: 0;
+  z-index: 100;
+  opacity: 0;
+  width: 35px;
+  height: 35px;
 }
-*/
 
 #subnav li {
-    margin: 0;
-    padding: 0.8em 0 0.5em 0;
+  margin: 0;
+  padding: 0.8em 0 0.5em 0;
 }
 
 #subnav a {
     text-decoration: none;
     padding: 0 1.25em 0.55em 1em;
+    color: {{ page.subnav_link_color }};
     background: transparent no-repeat 0em 1.2em;
     background-image: url('data:image/svg+xml,%3Csvg%20width%3D%22403%22%20height%3D%228%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cline%20stroke%3D%22%23{{ page.subnav_underline }}%22%20stroke-width%3D%222%22%20x1%3D%224%22%20y1%3D%224%22%20x2%3D%22400%22%20y2%3D%224%22%20/%3E%3Ccircle%20fill%3D%22%23{{ page.subnav_underline }}%22%20cx%3D%224%22%20cy%3D%224%22%20r%3D%224%22%20/%3E%3C/svg%3E');
     -webkit-transition: background-position 0.3s ease-out, color 0.3s ease-out;
@@ -361,7 +405,7 @@ section.overview a:active {
 }
 
 #subnav a:hover {
-  color: {{ page.subnav_link_colour }};
+  color: {{ page.subnav_hover_color }};
   background-position: 2em 1.2em;
   -webkit-transition: background-position 0.15s ease-out, color 0.15s ease-out;
   -moz-transition: background-position 0.15s ease-out, color 0.15s ease-out;
@@ -389,6 +433,14 @@ section.content {
 }
 
 
+section.content.content-small {
+  margin-top: 7.4em;
+    -moz-transition: none;
+    -webkit-transition: none;
+    -ms-transition: none;
+    -o-transition: left 0 ease-in;
+    transition: none;
+}
 
 
 section.content:after{
@@ -411,7 +463,10 @@ section.content:after{
   -o-transform: rotate({{ page.svg_asset_rotation }});
   transform: rotate({{ page.svg_asset_rotation }});
   opacity: 0.2;
-  background-size: {{ page.svg_asset_size }}
+  background-size: {{ page.svg_asset_size }};
+  {% if  page.svg_asset_contrast %}
+  -webkit-filter:contrast({{ page.svg_asset_contrast }}%);
+  {% endif %}
 }
 
 .ie section.content:after{
@@ -457,7 +512,7 @@ section .permalink {
 }
 
 .overview .project-name {
-    color: {{ page.highlight_colour }};
+  color: {{ page.highlight_colour }};
 }
 
 
@@ -631,28 +686,28 @@ article > h2 + p,
 }
 
 button {
-    color:{{ page.highlight_colour }};
-    border: 1px solid {{ page.button_border }};
-    border-radius: 3px;
-    background: {{ page.lowlight_colour }};
-    background: -moz-linear-gradient(top, {{ page.lowlight_colour }} 0%, {{ page.lowlight_colour }} 18%, {{ page.button_mid_stop }} 78%, {{ page.button_mid_stop }} 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,{{ page.lowlight_colour }}), color-stop(18%,{{ page.lowlight_colour }}), color-stop(78%,{{ page.button_mid_stop }}), color-stop(100%,{{ page.button_mid_stop }}));
-    background: -webkit-linear-gradient(top, {{ page.lowlight_colour }} 0%,{{ page.lowlight_colour }} 18%,{{ page.button_mid_stop }} 78%,{{ page.button_mid_stop }} 100%);
-    background: -o-linear-gradient(top, {{ page.lowlight_colour }} 0%,{{ page.lowlight_colour }} 18%,{{ page.button_mid_stop }} 78%,{{ page.button_mid_stop }} 100%);
-    background: -ms-linear-gradient(top, {{ page.lowlight_colour }} 0%,{{ page.lowlight_colour }} 18%,{{ page.button_mid_stop }} 78%,{{ page.button_mid_stop }} 100%);
-    background: linear-gradient(top, {{ page.lowlight_colour }} 0%,{{ page.lowlight_colour }} 18%,{{ page.button_mid_stop }} 78%,{{ page.button_mid_stop }} 100%);
+  color:{{ page.highlight_colour }};
+  border: 1px solid {{ page.button_border }};
+  border-radius: 3px;
+  background: {{ page.button_colour }};
+  background: -moz-linear-gradient(top, {{ page.button_colour }} 0%, {{ page.button_colour }} 18%, {{ page.button_colour_highlight }} 78%, {{ page.button_colour_highlight }} 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,{{ page.button_colour }}), color-stop(18%,{{ page.button_colour }}), color-stop(78%,{{ page.button_colour_highlight }}), color-stop(100%,{{ page.button_colour_highlight }}));
+  background: -webkit-linear-gradient(top, {{ page.button_colour }} 0%,{{ page.button_colour }} 18%,{{ page.button_colour_highlight }} 78%,{{ page.button_colour_highlight }} 100%);
+  background: -o-linear-gradient(top, {{ page.button_colour }} 0%,{{ page.button_colour }} 18%,{{ page.button_colour_highlight }} 78%,{{ page.button_colour_highlight }} 100%);
+  background: -ms-linear-gradient(top, {{ page.button_colour }} 0%,{{ page.button_colour }} 18%,{{ page.button_colour_highlight }} 78%,{{ page.button_colour_highlight }} 100%);
+  background: linear-gradient(top, {{ page.button_colour }} 0%,{{ page.button_colour }} 18%,{{ page.button_colour_highlight }} 78%,{{ page.button_colour_highlight }} 100%);
 }
 
 button:hover,
 button:focus,
 button:active {
-    background: {{ page.button_colour }};
-    background: -moz-linear-gradient(top, {{ page.button_colour }} 0%, {{ page.button_colour_highlight }} 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,{{ page.button_colour }}), color-stop(100%,{{ page.button_colour_highlight }}));
-    background: -webkit-linear-gradient(top, {{ page.button_colour }} 0%,{{ page.button_colour_highlight }} 100%);
-    background: -o-linear-gradient(top, {{ page.button_colour }} 0%,{{ page.button_colour_highlight }} 100%);
-    background: -ms-linear-gradient(top, {{ page.button_colour }} 0%,{{ page.button_colour_highlight }} 100%);
-    background: linear-gradient(top, {{ page.button_colour }} 0%,{{ page.button_colour_highlight }} 100%);
+  background: {{ page.button_hover_colour }};
+  background: -moz-linear-gradient(top, {{ page.button_hover_colour }} 0%, {{ page.button_hover_highlight }} 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,{{ page.button_hover_colour }}), color-stop(100%,{{ page.button_hover_highlight }}));
+  background: -webkit-linear-gradient(top, {{ page.button_hover_colour }} 0%,{{ page.button_hover_highlight }} 100%);
+  background: -o-linear-gradient(top, {{ page.button_hover_colour }} 0%,{{ page.button_hover_highlight }} 100%);
+  background: -ms-linear-gradient(top, {{ page.button_hover_colour }} 0%,{{ page.button_hover_highlight }} 100%);
+  background: linear-gradient(top, {{ page.button_hover_colour }} 0%,{{ page.button_hover_highlight }} 100%);
 }
 
 .buttons {
@@ -719,7 +774,7 @@ button:active {
 
 #navigation li.show-subnav {
   float: left;
-  margin-top: -0.3em;
+  margin-top: -0.2em;
   border-right:0;
   background: {{ page.icon_colour }};
   border: 1px solid {{ page.icon_border }};
@@ -735,13 +790,14 @@ button:active {
   margin-right: 1em;
 }
 
+.narrowScreen #navigation li.show-subnav {
+  margin-top: 0;
+}
+
 .ltIE9 #navigation li.show-subnav {
   display: none;
 }
 
-#navigation.show-subnav-button li.show-subnav + li {
-    border-left-width:1px;
-}
 
 /* Change Log Section */
 .change-log li h2 {
@@ -761,7 +817,7 @@ button:active {
 }
 
 .run .eval {
-	z-index: 100;
+	z-index: 28;
 	position: absolute;
   bottom: 12px;
   left: 10px;
@@ -903,35 +959,6 @@ aside  li:hover:after  {
 }
 
 
-.ace_cursor.ace_hidden {
-	opacity: 0!important;
-}
-
-.ace_editor {
-	font-family: 'Ubuntu Mono', monospace !important;
-  font-size: 1.6em !important;
-  left:30px;
-}
-
-.ace_editor .ace_sb {
-  overflow-y: auto !important;
-}
-
-.ace_scroller {
-    overflow-x: auto !important;
-}
-
-  /* set scrolling on short height browsers */
-@media only screen and (min-height:20px)  and (max-height:520px) {
-  #subnav.show-nav {
-    overflow:auto; 
-    -webkit-overflow-scrolling: touch;
-    height:340px;
-  }  
-  #subnav.show-nav.fixed {
-    height:440px;
-  }
-}  
 
 
 @media (min-width:340px) {
@@ -941,7 +968,7 @@ aside  li:hover:after  {
 }
 
 
-@media (min-width:35em) {
+@media (min-width:48em) {
 
 
   header img {
@@ -982,6 +1009,17 @@ aside  li:hover:after  {
     left: 0;
   }
   
+  header a,
+  header a:hover,
+  header a:focus,
+  header a:active {
+    {% if page.overview_inverse %}
+    color:{{ page.content_hover_colour }};
+    {% else %}
+    color: {{ page.highlight_colour }};
+    {% endif %}
+  }
+  
   header h1:after {
     position: absolute;
     content: '';
@@ -1010,12 +1048,17 @@ aside  li:hover:after  {
   }
   
   header h1.long-title:after {
-    padding-top:10px;
+    padding-top:0;
+    padding-bottom:0;
+    margin-bottom:15px;
+    bottom:{{ page.header_font_size | times:10 }}px;
+    top: auto;
   }
+  
 
   footer > div {
       text-align: right;
-      padding:2em 2em 2em 0;
+      padding:0 2em 0 0;
   }
 
 	section:after {
@@ -1185,3 +1228,37 @@ aside  li:hover:after  {
 
 }
 
+.narrowScreen header{
+  position: fixed;
+  z-index:101;
+  width:100%;
+  top: -800px;
+  padding-top:800px; /* http://git.io/mIiHQg */
+  left: 0;
+}
+.narrowScreen header h1 {
+  font-size: 20px;
+}
+
+.narrowScreen #navigation,
+.narrowScreen #navigation.float {
+   z-index: 101;
+   position: fixed;
+   top: 3.4em;
+   left: 0;
+   right: 0;
+   margin: 0;
+   box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.1);
+}
+
+.narrowScreen section .permalink {
+  top: -115px; /* The height of the nav so it doesn't get hidden under */
+  padding-top: 115px;
+  z-index: 1;
+  pointer-events:none;
+}
+
+/* Set to display none before initialising the view */
+#subnav {
+  visibility:hidden;
+}
