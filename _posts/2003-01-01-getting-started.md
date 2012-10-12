@@ -2,7 +2,7 @@
 heading: Getting Started
 category: overview
 ---
-Elsewhere requires [Node.js][node] and you will need to have it installed before you can follow the instructions below. 
+Elsewhere requires [Node.js][node] that you will need to have installed before you can follow the instructions below. 
 
 To download Elsewhere and start the server, you just need run these commands in your terminal application.
 
@@ -11,6 +11,6 @@ To download Elsewhere and start the server, you just need run these commands in 
     npm install
     bin/elsewhere
 
-Now just head to `localhost:8888`, type in a url and hit enter. The initial crawl will take while as each page needs to be visited and cached. Subsequent calls to the same url will be much faster because of this cache.
+Now just head to `localhost:8888`, type in a url and hit enter. The initial crawl will take while as each page needs to be visited and cached. Once cached though, you should find it pretty snappy.
 
 [node]: http://nodejs.org/
