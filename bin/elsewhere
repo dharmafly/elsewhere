@@ -29,10 +29,10 @@ function handler(req, res) {
   var query = require('url').parse(req.url, true).query;
 
   if (_.isEmpty(query)) {
-    queryUrl = normalizeUrl(req.url.substring(1));
+    queryUrl = req.url.substring(1);
   } else {
     if (query.url) {
-      queryUrl = normalizeUrl(query.url);
+      queryUrl = query.url;
     } else {
       res.writeHead(400, {'Content-Type': 'application/json; charset=utf-8'});
       var error = JSON.stringify({
@@ -47,16 +47,18 @@ function handler(req, res) {
   // build the options object
   options = {}
   if (query.strict !== undefined) {
-    options.strict = query.strict;
+    options.strict = (query.strict === 'true')? true : false;
   } else {
     options.strict = false;
   }
 
 
   grapher = Grapher.graph(queryUrl, options);
-  grapher.then(function(graph) {
+  grapher.done(function(graph) {
     respond(res, graph.toJSON(), query.callback);
   });
+
+
   
 }
 
@@ -69,12 +71,7 @@ function respond (res, json, callback) {
   }
 }
 
-function normalizeUrl (url) {
-  var urlBits = require('url').parse(url, true),
-      url     = fn.url.removeTrailingSlash(urlBits.href);
 
-  return urlBits.protocol ? url : "http://" + url;
-}
 
 app.listen(8888, 'localhost');
 
