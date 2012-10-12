@@ -1,6 +1,6 @@
 --- 
-category: overview
 heading: How does it work?
+category: overview
 ---
 
 Elsewhere crawls the web page at the supplied URL and looks for links that contain the attribute [`rel=me`][rel=me]:

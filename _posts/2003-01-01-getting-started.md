@@ -1,6 +1,6 @@
 --- 
-category: overview
 heading: Getting started
+category: overview
 ---
 
 Elsewhere requires [Node.js][node] to be installed first.
@@ -14,5 +14,8 @@ Download Elsewhere and start the server by running these commands in the termina
 
 Now just head to [`localhost:8888`][localhost], type in a URL and hit enter. The initial crawl will take a while, as each page needs to be visited, checked and cached. Once cached though, it should be pretty snappy.
 
+**See the [API Reference][reference]** for more details.
+
 [node]: http://nodejs.org
 [localhost]: http://localhost:8888
+[reference]: reference/
