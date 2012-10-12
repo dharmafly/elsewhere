@@ -1,29 +1,28 @@
 --- 
-heading: Global Configuration
 category: reference
+heading: Global configuration
 ---
-Instead of using a local `options` object each time you call the graph method, you can also set options in the global options object.
 
-Options shared between the global options object and local objects that are set via the global object act as defaults for each call to the graph method, any options that are then provided directly to the graph method via a local object will override those of the global object.
+Instead of using a local options object each time you call the `graph()` method, you can also set global options by setting properties in the `elsewhere.options` object.
 
-The two options shared between the global options object and local objects are `crawlLimit` and `stripDeeperLinks`.
+Global options act as default values, which can then be overriden by options passed when calling the `graph()` method.
 
-**strict** (boolean)  Switches weather the spider only allows reciprocal rel="me" links or not. A reciprocal is where site links into the graph and another site in the graph links back. True will give you less results, but with less of a chance of error. Defaults to false.
+**strict** (boolean)  Whether the crawler allows only reciprocal rel="me" links or not. A reciprocal link is where the page at a URL links to another page in the graph, and a page in the graph links back to the original URL. When `true`, there will be no false positives, but fewer results. Default: `false`
 
-**logLevel** (integer) There are 4 levels of logging in Elsewhere 4 log, 3 info, 2 warn and 4 error. The 4 setting returns the the finest logging level only relevant in a debugging scenario. Deaults to 3 
+**logLevel** (integer) There are 4 levels of logging in Elsewhere: 4 - log, 3 - info, 2 - warn and 1 -  error. The 4 setting gives the most granular logs, which are useful in a debugging scenario. Default: `3` 
 
-**crawlLimit** (integer) The number of links Elsewhere will follow without a successful verification before it abandons the chain. Defaults to 3.
+**crawlLimit** (integer) The number of links that Elsewhere will follow without a successful verification before it abandons the chain. Default: `3`
 
-**domainLimit** (integer) The number of links crawled within one domain before the crawling of any subsequent links is abandoned. Defaults to 3,
+**domainLimit** (integer) The number of links crawled within a particular domain before the crawling of subsequent links in the domain is abandoned. Default: `3`
 
-**stripDeeperLinks** (boolean) If set to `true` then Elsewhere will discard links that share a domain with another link or links at a shallower level. E.g. plus.google.com/{id} is kept, while plus.google.com/{id}/posts is discarded. Defaults to true.
+**stripDeeperLinks** (boolean) If set to `true` then Elsewhere will remove links from the graph if they are at a deeper path than other links in the same domain. For example, `plus.google.com/{id}` is retained, but `plus.google.com/{id}/posts` is discarded. This is useful, for example, to strip out paginated contacts pages on social networks. Default: `true`
 
-**cacheTimeLimit** The amount of time graphs and links are kept in the cache for before they are discarded. Time is set in Defaults to 3600000.
+**cacheTimeLimit** The amount of time, in milliseconds, that graphs and pages are kept in the cache before they are discarded. Default: `3600000`
 
-**cacheItemLimit** (integer) The number of items to keep in cache before some are discarded. Use to limit memory. Defaults to 1000 
+**cacheItemLimit** (integer) The maximum number of items that can be kept in the cache before the oldest items are discarded. Use to limit memory. Default: `1000`
 
-
-If you are running Elsewhere as a server then you may set these options directly in `lib/options.js`. Here is some example usage of the options object:
+For example:
     
     elsewhere.options.strict = false;
 
+If you are running Elsewhere as a server, then you may set the options directly in `lib/options.js`. 

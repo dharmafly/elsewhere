@@ -1,11 +1,13 @@
 --- 
-heading: Custom Cache
 category: reference
+heading: Custom cache
 ---
 
-Elsewhere use an in-memory cache to store the html of web pages. The options object contains a property called 'cacheTimeLimit' which can be use to set the refresh gap, by default it is set 360000ms. The number of items stored in the cache can be limited using the options property 'cacheItemLimit' by default its is set to a 1000 items.
+Elsewhere use an in-memory cache to store the HTML of web pages.
 
-You can replace the cache with your own functionally if you want store the cached date in a database or file system. To add you own custom cache all you need to do is provide an object contain the following interface:
+The options object contains a property called `cacheTimeLimit` that can be used to set the cache refresh time. By default, this is 3600000ms (1 hour). The number of items stored in the cache can be limited using the options property `cacheItemLimit`. By default, the cache is limited to 1000 items.
+
+You can replace the cache with your own, for example, to store the cached date in a database or file system. To add you own custom cache, all you need to do is provide an object containing the following interface:
 
     {
         function get (url) {
@@ -29,4 +31,4 @@ You can replace the cache with your own functionally if you want store the cache
         }
     }
 
-You simply attach you cache object to the 'option.cache' property and pass it into 'elsewhere.graph' method.
+and then add this interface as the `cache` property of the options object passed into the `graph()` method.
