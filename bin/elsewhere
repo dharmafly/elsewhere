@@ -54,12 +54,12 @@ function handler(req, res) {
 
 
   grapher = Grapher.graph(queryUrl, options);
-  grapher.done(function(graph) {
-    respond(res, graph.toJSON(), query.callback);
+  grapher.done(function(errors, graph) {
+    if (errors) {
+      graph.errors = errors;
+    }
+    respond(res, JSON.stringify(graph), query.callback);
   });
-
-
-  
 }
 
 function respond (res, json, callback) {
