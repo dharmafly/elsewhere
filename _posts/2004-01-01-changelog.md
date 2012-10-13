@@ -3,6 +3,8 @@ heading: Changelog
 category: overview
 ---
 
+* v0.0.3
+    - Replace JSDOM with Cheerio. Add domain limiter. Various other changes.
 * v0.0.2
     - Tweaks to the signature of the graph method. Various internal changes.
 * v0.0.1 
