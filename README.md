@@ -1,21 +1,55 @@
 Elsewhere
-================
+=========
 
-Elsewhere is a Node.js project that aims to replicate the functionality of the Google Social Graph API.
+[Elsewhere][elsewhere] is a [Node.js][node] project that aims to replicate part of the functionality of the Google's now discontinued [Social Graph API][google-social-graph-api]. When given the URL of a person's website or social media profile (e.g. a [Twitter account][twitter-profile]), and it outputs a JSON-formatted list of the other websites and social media profiles that belong to that person. In other words, it can determine a person's ['social graph'][socialgraph] from a single URL in the graph.
 
-It does this by crawling a target url for `rel=me` [microformated][microformats] links. It then crawls those links for more `rel=me` links and so on, building a comprehensive graph as it goes.
+Elsewhere can be set up as a web service, providing a JSON API that can be easily queried over a network. It can also be included as a Node module and used directly within a server-side project.
 
-Elsewhere provides a JSON API that URL's can be easily queried against via client JavaScript. It can also be included as a [Node.js][node] module and used directly in your server projects.
 
-### JSON API
+## How does it work?
 
-Once you've cloned the project and run an `npm install`, run the server located @ `bin/elsewhere` and point your browser at `localhost:8888` to try it out.
+Elsewhere crawls the web page at the supplied URL and looks for links that contain the attribute [`rel=me`][rel=me]:
 
-To query aginst the example server API in your code, your queries most be formatted like so:
+    <a href="http://dharmafly.com" rel="me">Dharmafly</a>
 
-    http://localhost:8888/?url=[url you wish to query]
+The `rel=me` attribute is a microformat to assert that the link is to a website, page or resource that is owned by (or is about) the same person that at the target URL. For example, if the target URL is a person's Twitter profile page, then that page may contain a link to the person's home page or main website.
 
-The JSON it returns looks like this:
+The URLs in the `rel=me` links are then crawled for further `rel=me` links and so on, building a comprehensive graph along the way.
+
+For example, a person's Twitter profile page may link to his or her home page, which then links to the person's Last.fm, Flickr, Facebook, GitHub, LinkedIn and Google+ profiles, as well as the person's company website. The information in the graph is all public, having been added by the person when they created their social media profiles and web pages.
+
+Once Elsewhere has run out of `rel=me` links to crawl, it returns the list of URLs it has found, representing the person's 'social graph'.
+
+
+## Strict Mode and verified links
+
+Elsewhere can make strict checks to verify that that each linked URL is indeed owned by the same person as the original site. After all, anyone could create a website, add a `rel=me` link to [Elvis Presley][elvis]'s website and claim to be him.
+
+Elsewhere checks if the linked page itself has a `rel=me` link back to the original URL. If there is such a reciprocal link, then the relationship is deemed to be 'verified'.
+
+But Elsewhere is more sophisticated than that. The reciprocal link doesn't have to be directly between the two sites. For example, if a Twitter account links to a GitHub account, which links to a home page, which links back to the Twitter account, then the relationship between the Twitter account and home page will be verified, even though the two don't directly link to each other.
+
+Elsewhere operates in non-strict mode by default, in which it will return both verified and unverified URLs. This mode is useful because many profile pages and personal websites lack `rel=me` links, making it difficult to verify those links and leading to many legitimate links being missed.
+
+To be absolutely sure of the stated relationships, turn on strict mode (by setting the `strict` option to `true`) and only verified URLs will be returned.
+
+
+## Getting started
+
+Elsewhere requires Node.js to be installed first.
+
+Clone the repo and start the server by running these commands in the terminal:
+
+    git clone git@github.com:dharmafly/elsewhere.git
+    cd elsewhere
+    npm install
+    bin/elsewhere
+
+Now head to [`localhost:8888`][localhost], type in a URL and hit enter. Alternatively, supply the target URL as a query parameter:
+
+    http://localhost:8888/?url=chrisnewtn.com
+
+The JSON returned looks like this:
 
     {
       results: [
@@ -24,8 +58,8 @@ The JSON it returns looks like this:
           title: "Chris Newton",
           favicon: "http://chrisnewtn.com/favicon.ico",
           outboundLinks: {
-          verified: [ ... ],
-          unverified: [ ]
+              verified: [ ... ],
+              unverified: [ ]
           },
           inboundCount: {
             verified: 4,
@@ -35,31 +69,39 @@ The JSON it returns looks like this:
         }
       ],
       query: "http://chrisnewtn.com",
-      created: "2012-09-08T16:30:57.270Z",
+      created: "2012-10-12T16:30:57.270Z",
       crawled: 9,
       verified: 9
     }
 
-### Using it as a Node Module
+The initial crawl will take a while, as each page needs to be visited, checked and cached. Once cached though, it should be pretty snappy.
 
-To use Elsewhere as a node module, just clone it into the `node_modules` directory of your project and require it in your source.
+**[See the API Reference][reference]** for more details.
+
+
+## Using Elsewhere as a Node Module
+ 
+Elsewhere is available on [NPM][npm]. To install it, run:
+
+    npm install elsewhere
+
+Once you have it installed, you can [require()][require] it and interact with it using the `graph()` method.
 
     var elsewhere = require('elsewhere');
 
-The example code below builds a graph of `http://premasagar.com` and the [promises][_deferred] interface to render the result.
-
     elsewhere.graph('http://premasagar.com').then(function (graph) {
-      res.end(graph.toJSON());
+        res.end(graph.toJSON());
     });
 
-The graph method accepts a variety of options. Two of these (`strict` & `stripDeeperLinks`) only govern what toJSON returns and do not affect the graph itself.
 
-* `strict`: If this is set to true then `toJSON` will not return url which are unverified. An unverified url is any url which does not link to any other verified url. The url provided to the graph method is inherently verified.
-* `stripDeeperLinks`: If set to true then urls at deeper path depths than that of the shallowest on the same domain will be discarded.
-* `crawlLimit` The number of urls that can be crawled in a row without any successful verifications before the crawling of any subsequent urls is abandoned.
+## elsewherejs.com
 
-The default options as well as some more low level options can be found in `lib/options.js`.
+**[See elsewherejs.com][elsewhere] for full documentation.**
 
-[node]: http://nodejs.org/
-[microformats]: http://microformats.org/wiki/rel-me
+
+[elsewhere]: http://elsewherejs.com
+[node]: http://nodejs.org
+[rel=me]: http://microformats.org/wiki/rel-me
 [_deferred]: https://npmjs.org/package/underscore.deferred
+[npm]: https://npmjs.org/package/elsewhere
+[require]: http://nodejs.org/api/globals.html#globals_require
