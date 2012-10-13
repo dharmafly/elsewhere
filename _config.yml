@@ -1,6 +1,6 @@
 # The project
 PROJECT_NAME: Elsewhere
-GITHUB_CURRENT_VERSION: 0.0.2
+GITHUB_CURRENT_VERSION: 0.0.3
 GITHUB_PROJECT_URL: https://github.com/dharmafly/elsewhere
 
 # Site theme (options: forest, ocean, horus, seagrass, sundae, slate)
