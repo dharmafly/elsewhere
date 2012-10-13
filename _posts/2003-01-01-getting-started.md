@@ -1,5 +1,5 @@
 --- 
-heading: Getting started
+heading: Getting Started
 category: overview
 ---
 

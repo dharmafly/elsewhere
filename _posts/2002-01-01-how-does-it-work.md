@@ -5,7 +5,7 @@ category: overview
 
 Elsewhere crawls the web page at the supplied URL and looks for links that contain the attribute [`rel=me`][rel=me]:
 
-	<a href="http://dharmafly.com" rel="me">Dharmafly</a>
+  <a href="http://dharmafly.com" rel="me">Dharmafly</a>
 
 The `rel=me` attribute is a microformat to assert that the link is to a website, page or resource that is owned by (or is about) the same person that at the target URL. For example, if the target URL is a person's Twitter profile page, then that page may contain a link to the person's home page or main website.
 
