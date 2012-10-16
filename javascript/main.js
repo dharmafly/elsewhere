@@ -10,9 +10,12 @@
 
 ***********************************************/
 
-var jQuery1_7_1 = jQuery;
+var satya = satya || {};
+satya.jQuery = jQuery.noConflict(true);
 
-var satya = (function ($, $qS) { // jQuery and document.querySelector
+satya.page = (function ($, $qS) { // jQuery and document.querySelector
+
+  "use strict";
 
   // --------------------
   
@@ -79,15 +82,6 @@ var satya = (function ($, $qS) { // jQuery and document.querySelector
     return visualWidth;
   }
   
-  // Finds the width in ems of any string
-  function getEmWidth(chars){
-    var p = document.createElement("span");
-    p.innerHTML = chars;
-    document.body.appendChild(p);
-    var width = p.getBoundingClientRect().width;
-    document.body.removeChild(p);
-    return width;
-  }
   
   function getTargetId(hashId){
     return hashId ? hashId.substring(1, hashId.length) : null;
@@ -97,11 +91,14 @@ var satya = (function ($, $qS) { // jQuery and document.querySelector
   function animateScrollTo(offset, callback) {
   
     var total = Math.abs(window.pageYOffset - offset),
-        start = Math.ceil(1000 * total / 
-                  document.documentElement.scrollHeight),
+        start = document.documentElement.scrollHeight < window.innerHeight * 8 ? 
+                  window.Math.ceil(500 * total / 
+                    document.documentElement.scrollHeight) 
+                  : window.Math.ceil(1000 * total / 
+                    (window.innerHeight * 8)) ,
         last, 
         timer;
-
+        
     clearTimeout(timer);
     
     (function doScroll() {
@@ -113,13 +110,11 @@ var satya = (function ($, $qS) { // jQuery and document.querySelector
 
       var difference = window.pageYOffset - offset,
           direction  = difference < 1 ? 1 : -1,
-          modifier   = Math.abs(difference) / total,
+          modifier   = Math.abs(difference) / total,  
           increment  = Math.ceil(start * modifier);
       
-      if (difference !== last && 
-        (direction < 0 || 
-          window.innerHeight + window.pageYOffset 
-          !== document.documentElement.scrollHeight)) {
+      if (difference !== last &&  (direction < 0 || 
+          window.innerHeight + window.pageYOffset !== document.documentElement.scrollHeight)) {
         if (difference < increment && difference > increment * -1) {
           increment = Math.abs(difference);
         }
@@ -141,7 +136,7 @@ var satya = (function ($, $qS) { // jQuery and document.querySelector
   
   function setLogoPosition(){
     var header = $qS('h1.title'),
-        svg_width = parseInt(getComputedStyle(header, ':after').width);
+        svg_width = parseInt(getComputedStyle(header, ':after').width, 10);
     if(($qS('h1.title a').clientWidth + svg_width) > header.clientWidth){
       header.classList.add('long-title');
     }
@@ -168,14 +163,14 @@ var satya = (function ($, $qS) { // jQuery and document.querySelector
   
   // ---------------------
   
-  // GLOBALS
+  // satyaS
   
      
-  var narrowScreen = GLOBAL.narrowScreen, 
+  var narrowScreen = satya.narrowScreen, 
       // Why sniff for ipad? 
       // It's to prevent iOS5 position fixed bugs, 
       // rather than anything to do with width
-      isIPad = GLOBAL.isIPad, 
+      isIPad = satya.isIPad, 
       navEl = $qS('#navigation'),
       header = $qS('header'),
       navOffsetTop = navEl.offsetTop,
@@ -227,8 +222,7 @@ var satya = (function ($, $qS) { // jQuery and document.querySelector
   
   // space on left of page < width of subnav 
   function isSubnavSqueezed(){
-    return subnav.width + (subnav.margin * 2) + (contentWidth/2) 
-           > (window.innerWidth/2);
+    return subnav.width + (subnav.margin * 2) + (contentWidth/2) > (window.innerWidth/2);
   } 
   
   // COMPONENTS
@@ -282,8 +276,8 @@ var satya = (function ($, $qS) { // jQuery and document.querySelector
     this.el = el; 
     this.isScrollGtHeader = false;
     this.isSubnavSqueezed = false;
-    this.isOpen;
-    this.timeout; 
+    this.isOpen = null;
+    this.timeout = null; 
     this.width = getLinkListWidth(el); 
     this.height = this.el.getBoundingClientRect().height;
     // TO DO
@@ -363,8 +357,7 @@ var satya = (function ($, $qS) { // jQuery and document.querySelector
   // Set a fixed height on the subnav at the point
   // the subnav is taller than the available space on-screen
   Subnav.prototype.setSubnavHeight  = function setSubnavHeight(setHeight) {
-    var availHeight = window.innerHeight - this.el.offsetTop - 10,
-        navHeight = narrowScreen ? navEl.offsetTop + navEl.clientHeight : 0;
+    var availHeight = window.innerHeight - this.el.offsetTop - 10;
     
     if((this.isScrollGtHeader || setHeight) && (this.height > availHeight)){
       this.el.style.height = (availHeight - 20) + 'px';
@@ -378,7 +371,12 @@ var satya = (function ($, $qS) { // jQuery and document.querySelector
   };
   
   Subnav.prototype.toggle = function() {
-    this.isOpen ? this.close() : this.open();
+    if(this.isOpen){ 
+      this.close();
+    } 
+    else {
+      this.open();
+    }  
   };
   
   Subnav.prototype.open = function() {
@@ -424,7 +422,7 @@ var satya = (function ($, $qS) { // jQuery and document.querySelector
     var options = $(this.el).find('a').map(function(){
       var link = this;
       return $('<option>').attr('value',link.hash).text(link.innerHTML)[0];
-    })
+    });
     
     var $select = $('<select id="subnav-menu">').append(options);
     
@@ -493,6 +491,7 @@ var satya = (function ($, $qS) { // jQuery and document.querySelector
     
     window.addEventListener('load', function(){
       $.publish('subnavSqueezed', isSubnavSqueezed());
+      setLogoPosition();
     });
     
     /* document.body.addEventListener('orientationchange', function(){
@@ -530,25 +529,18 @@ var satya = (function ($, $qS) { // jQuery and document.querySelector
     });
     
     // -------
-   
-   
     
     setPermalinkTopOffset();
     
-  };
+  }
   
   // Initialise after feature detection
   if (document.querySelectorAll && document.body.classList) {
     init();
   }
   
-  return {
-    // returned here to the global scope in order to be called
-    // by external functions (e.g. googlefonts callbacks)
-     setLogoPosition :  setLogoPosition
-  }
   
-})(jQuery1_7_1, function () { return document.querySelector.apply(document, arguments); });
+})(satya.jQuery, function () { "use strict"; return document.querySelector.apply(document, arguments); });
 
 
 
