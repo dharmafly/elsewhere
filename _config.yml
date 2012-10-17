@@ -1,6 +1,7 @@
 # The project
 PROJECT_NAME: Elsewhere
-GITHUB_CURRENT_VERSION: 0.0.3
+# Version number as a string
+VERSION: '0.0.3'
 GITHUB_PROJECT_URL: https://github.com/dharmafly/elsewhere
 
 # Site theme (options: forest, ocean, horus, seagrass, sundae, slate)
@@ -10,7 +11,11 @@ THEME: seagrass
 ############ Options
 
 # URLs
-GITHUB_ZIP_URL: https://github.com/dharmafly/elsewhere/zipball/master
+DOWNLOAD_LINKS:
+  - text: Elsewhere
+    subtext: v{{ version }}
+    href: https://github.com/dharmafly/elsewhere/zipball/master
+    title: Master branch zip
 TWITTER_PROJECT_URL: https://twitter.com/dharmafly
 
 # Primary language or technology (options: javascript, css, html5)
@@ -39,6 +44,8 @@ sections:
 
 # Link from overview to reference
 REFERENCE_LINK_TEXT: "Complete documentation can be found here:"
+
+#GITHUB_ZIP_URL: https://github.com/dharmafly/dharmafly-docs/zipball/gh-pages
 
 ############ Jekyll options
 
