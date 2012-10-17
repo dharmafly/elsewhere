@@ -1,6 +1,6 @@
 --- 
-category: reference
 heading: Custom cache
+category: reference
 ---
 
 Elsewhere use an in-memory cache to store the HTML of web pages.

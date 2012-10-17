@@ -1,6 +1,6 @@
 --- 
-category: reference
 heading: Custom logger
+category: reference
 ---
 
 Elsewhere use a simple logging system that writes to Node's console. You can replace the logger with your own, for example, to store warnings and errors in a database or log file. To add your own custom logger, all you need to do is provide an object contain the following interface:

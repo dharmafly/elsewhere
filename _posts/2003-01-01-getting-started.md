@@ -1,6 +1,6 @@
 --- 
-category: overview
 heading: Getting Started
+category: overview
 ---
 
 Elsewhere requires [Node.js][node] to be installed first.
