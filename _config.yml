@@ -3,7 +3,6 @@ PROJECT_NAME: Elsewhere
 # Version number as a string
 VERSION: '0.0.3'
 GITHUB_PROJECT_URL: https://github.com/dharmafly/elsewhere
-
 # Site theme (options: forest, ocean, horus, seagrass, sundae, slate)
 THEME: seagrass
 
@@ -39,13 +38,7 @@ sections:
    name: Overview
  - path: /reference/index.html
    name: Reference
-
-############ Deprecated 
-
-# Link from overview to reference
-REFERENCE_LINK_TEXT: "Complete documentation can be found here:"
-
-#GITHUB_ZIP_URL: https://github.com/dharmafly/dharmafly-docs/zipball/gh-pages
+   
 
 ############ Jekyll options
 
