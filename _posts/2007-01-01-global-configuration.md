@@ -1,6 +1,6 @@
 --- 
-heading: Global configuration
 category: reference
+heading: Global configuration
 ---
 
 Instead of using a local options object each time you call the `graph()` method, you can also set global options by setting properties in the `elsewhere.options` object.

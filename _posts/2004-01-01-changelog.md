@@ -1,6 +1,6 @@
 --- 
-heading: Changelog
 category: overview
+heading: Changelog
 ---
 
 * v0.0.3
