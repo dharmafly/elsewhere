@@ -2,8 +2,9 @@
   "author": "Dharmafly (dharmafly.com)",
   "name": "elsewhere",
   "description": "A node project that aims to replicate the functionality of the Google Social Graph API",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "keywords": [
+    "discovery",
     "spider",
     "microfomats",
     "rel=me",
@@ -19,12 +20,13 @@
     "cheerio": "0.10.x",
     "request": "2.10.x",
     "underscore": "1.3.x",
-    "underscore.Deferred": "0.1.x"
+    "underscore.Deferred": "0.1.x",
+    "webfinger": "0.1.x"
   },
   "devDependencies": {},
   "optionalDependencies": {},
   "engines": {
-    "node": ">= 0.8.1"
+    "node": ">= 0.8.x"
   },
   "subdomain": "dharmafly.elsewhere",
   "scripts": {
