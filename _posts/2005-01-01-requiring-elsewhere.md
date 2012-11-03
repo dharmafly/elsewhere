@@ -1,6 +1,6 @@
 --- 
-heading: Requiring Elsewhere
 category: reference
+heading: Requiring Elsewhere
 ---
 
 Elsewhere is available on [NPM][npm]. To install it, run:
@@ -11,8 +11,8 @@ Once you have it installed, you can [require()][require] it and interact with it
 
     var elsewhere = require('elsewhere');
 
-    elsewhere.graph('http://premasagar.com').then(function (graph) {
-        res.end(graph.toJSON());
+    elsewhere.graph('http://premasagar.com').then(function (err, graph) {
+        res.end(graph);
     });
 
 

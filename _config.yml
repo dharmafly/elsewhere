@@ -1,56 +1,52 @@
-# The project
-PROJECT_NAME: Elsewhere
-# Version number as a string
-VERSION: '0.0.3'
-GITHUB_PROJECT_URL: https://github.com/dharmafly/elsewhere
-# Site theme (options: forest, ocean, horus, seagrass, sundae, slate)
+--- 
+ga_id: UA-34978047-3
 THEME: seagrass
-
-
-############ Options
-
-# URLs
-DOWNLOAD_LINKS:
-  - text: Elsewhere
-    subtext: v{{ version }}
-    href: https://github.com/dharmafly/elsewhere/zipball/master
-    title: Master branch zip
-TWITTER_PROJECT_URL: https://twitter.com/dharmafly
-
-# Primary language or technology (options: javascript, css, html5)
-LANG: javascript
-
-# Documentation site scripts
-SCRIPTS:
-
-# Footer quote
-QUOTE:
-  quote: It is living and ceasing to live that are imaginary solutions. Existence is elsewhere. 
+QUOTE: 
+  quote: It is living and ceasing to live that are imaginary solutions. Existence is elsewhere.
   cite: Andre Breton
-
-# Site analytics
+version: 0.0.4
+download_links: 
+- title: Master branch zip
+  href: https://github.com/dharmafly/elsewhere/zipball/master
+  subtext: v{{ version }}
+  text: Elsewhere
+future: true
+project_name: Elsewhere
+DOWNLOAD_LINKS: 
+- title: Master branch zip
+  href: https://github.com/dharmafly/elsewhere/zipball/master
+  subtext: v{{ version }}
+  text: Elsewhere
+TWITTER_PROJECT_URL: https://twitter.com/dharmafly
+LANG: javascript
+permalink: /:title
+baseurl: /
+scripts: 
+- src: https://github.com/downloads/dharmafly/pablo/pablo.min.js
+project_url: https://github.com/dharmafly/elsewhere
+theme: seagrass
+quote: 
+- quote: It is living and ceasing to live that are imaginary solutions. Existence is elsewhere.
+- cite: Andre Breton
+VERSION: 0.0.3
+auto: false
+GITHUB_PROJECT_URL: https://github.com/dharmafly/elsewhere
 GA_ID: UA-34978047-3
-
-# Page names
-# The following paths are hard-coded to match directory names / site categories.
-sections:
- - path: /index.html
-   name: Overview
- - path: /reference/index.html
-   name: Reference
-   
-
-############ Jekyll options
-
-safe:        false
-auto:        false
-server:      false
-
-future:      true
-lsi:         false
-pygments:    false
-markdown:    maruku
-permalink:   /:title
-baseurl:     /
-
-exclude: ['README.md', 'assets', 'FiddlerRules.farx']
+markdown: maruku
+twitter_url: https://twitter.com/dharmafly
+SCRIPTS: 
+pygments: false
+lang: javascript
+sections: 
+- name: Overview
+  path: /index.html
+- name: Reference
+  path: /reference/index.html
+server: false
+PROJECT_NAME: Elsewhere
+safe: false
+lsi: false
+exclude: 
+- README.md
+- assets
+- FiddlerRules.farx

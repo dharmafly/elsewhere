@@ -1,8 +1,10 @@
 --- 
-heading: Changelog
 category: overview
+heading: Changelog
 ---
 
+* v0.0.4
+    - Changed error handing and surfaced warnings in the graph data. Various other changes.
 * v0.0.3
     - Replace JSDOM with Cheerio. Add domain limiter. Various other changes.
 * v0.0.2

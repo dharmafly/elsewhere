@@ -1,6 +1,6 @@
 --- 
-heading: Getting Started
 category: overview
+heading: Getting Started
 ---
 
 Elsewhere requires [Node.js][node] to be installed first.
@@ -35,6 +35,9 @@ The returned JSON looks like this:
           verified: true
         }
       ],
+      warnings: [
+        "http error: 404 (Not Found) - http://twitter.com/statuses/user_timeline/chrisnewtn.rss"
+      ],
       query: "http://chrisnewtn.com",
       created: "2012-10-12T16:30:57.270Z",
       crawled: 9,
@@ -42,6 +45,9 @@ The returned JSON looks like this:
     }
 
 The initial crawl will take a while, as each page needs to be visited, checked and cached. Once cached though, it should be pretty snappy.
+
+
+
 
 **[See the API Reference][reference]** for more details.
 
