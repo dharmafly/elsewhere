@@ -74,7 +74,6 @@ function handler(req, res) {
 }
 
 
-
 function addBool(name, query, options){
   if (query[name]) {
     options[name] = (query[name] === 'true')? true : false;
@@ -82,17 +81,10 @@ function addBool(name, query, options){
 }
 
 function addInt(name, query, options){
-  if (query[name] && isInt(query[name])) {
+  if (query[name] && _.isNumber(query[name])) {
     options[name]= parseInt(query[name]);
   } 
 }
-
-function isInt(obj) {
-    var re = /^\d+$/;
-    return re.test(obj);
-};
-
-
 
 
 function respond (res, json, callback) {
