@@ -1,0 +1,27 @@
+# project site config
+
+project_name: Elsewhere
+project_url: https://github.com/dharmafly/elsewhere
+version: '0.0.4'
+# options: forest, ocean, horus, seagrass, sundae, slate
+theme: seagrass
+twitter_url: https://twitter.com/dharmafly
+# options: javascript, css, html5
+lang: javascript
+scripts:
+- src: https://github.com/downloads/dharmafly/pablo/pablo.min.js
+quote:
+- quote: It is living and ceasing to live that are imaginary solutions. Existence is elsewhere.
+- cite: Andre Breton
+# analytics
+ga_id: UA-34978047-3
+download_links:
+  - text: Elsewhere
+    subtext: v{{ version }}
+    href: https://github.com/dharmafly/elsewhere/zipball/master
+    title: Master branch zip
+sections:
+ - path: /index.html
+   name: Overview
+ - path: /reference/index.html
+   name: Reference
