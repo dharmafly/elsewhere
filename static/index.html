@@ -223,8 +223,8 @@
       }
 
       input[type="submit"]{
-        margin-top: 1em;
-        margin-left: 12em;
+        margin-top: 0.5em;
+        margin-left: 10.2em
       }
 
       label{
@@ -282,6 +282,73 @@
         margin-top: 10em;
       }
 
+.form {
+
+}
+
+.form input[type="text"], .form .button, .form select {
+  margin:10px auto;
+  padding:5px;
+  width:100%;
+  line-height:19px;
+  display:block;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  border:1px solid #eee;
+  border-radius:2px;
+  font-size:14px;
+  background:#fff;
+}
+
+.form input[type="text"], .form select {
+  height:31px;
+  line-height:21px;
+}
+
+.form input:hover, .form select:hover, .form .button:hover {
+  border:1px solid #888;
+}
+
+.form input:focus, .form select:focus, .form .button:active {
+  border:1px solid #0078F0;
+  box-shadow:0 0 3px #0078F0;
+  outline:none;
+}
+
+.form .button {
+  cursor:pointer;
+  text-align:center;
+  background:#f5f5f5;
+  margin:17px 0;
+}
+
+.form a.button:hover {
+  color:#000;
+}
+
+.form .button:active {
+  background:#0078F0;
+  color:#fff;
+  font-weight:bold;
+}
+
+@media (min-width:480px) {
+  .form input[type="text"], .form select {
+    width:300px;
+    margin:10px 0;
+    display:inline-block;
+  }
+
+  .form .button {
+    width:auto;
+    padding:5px 10px;
+  }
+
+  .form .button:active {
+    font-weight:normal;
+  }
+}
+
 
     </style>
 
@@ -289,29 +356,29 @@
   <body>
     <h1>elsewhere</h1>
 
-    <p class='notes'>Just enter a url below and hit 'parse' button to get a nice 
-      list of links. Alternatively select 'raw json' and the result will 
+    <p class='notes'>Just enter a url below and hit 'parse' to get a nice 
+      list of links. Alternatively, select 'raw json' and the result will 
       be returned as JSON.</p>
 
 
 
     <h2>API example - Finds Urls belonging to an individaul</h2>
 
-    <form id="form" method="get" action=".">
+    <form class="form" id="form" method="get" action=".">
 
       <p><label for="url">url</label>
         <input type="text" name="url" id="url" value="http://lanyrd.com/profile/chrisnewtn" />
-      </p>
-
-      <p id="callbackSet"><label for="callback">callback</label>
-        <input type="text" name="callback"  id="callback"/>
       </p>
 
       <p><label for="rawjson">raw JSON</label>
         <input type="checkbox" name="rawjson" autocomplete="off" id="rawjson" />
       </p>
 
-      <input type="submit" value="Parse"/>
+      <p id="callbackSet" style="margin-top:10px"><label for="callback">callback</label>
+        <input type="text" name="callback"  id="callback"/>
+      </p>
+
+      <input class="button" type="submit" value="Parse"/>
 
       <p class="form-break">Options<p>
 
@@ -346,7 +413,7 @@
         </select>
       </p>
 
-      <p><label for="logLevel ">logLevel </label>
+      <p><label for="logLevel ">logLevel</label>
         <select name="logLevel " id="logLevel">
           <option value="1">errors (1)</option>
           <option value="2">warnings (2)</option>
@@ -375,16 +442,16 @@
       <dl>
 
         <dt>strict</dt>
-          <dd>Whether the crawler only allows reciprocal rel="me" links true will give less results, but with less chance of error</dd>
+          <dd>Whether the crawler only allows reciprocal rel="me" links. True will give less results, but with less chance of errors.</dd>
 
         <dt>useCache</dt>
-          <dd>Wheather a request should use the cache during a request.</dd>    
+          <dd>Whether a request should use the cache during a request.</dd>    
 
         <dt>crawlLimit</dt>
-          <dd>The number of links crawled in a row without any successful validations before the crawling of any subsequent links is abandoned.</dd>
+          <dd>The number of links crawled in a row without any successful validations, before the crawling of any subsequent links is abandoned.</dd>
 
         <dt>domainLimit</dt>
-          <dd>The number of links crawled within one domain before the crawling of any subsequent links is abandoned.</dd>
+          <dd>The number of links crawled within one domain, before the crawling of any subsequent links is abandoned.</dd>
 
         <dt>stripDeeperLinks</dt>
           <dd>If set to true then links at deeper path depths than that of the shallowest on the same domain will be discarded.</dd>
@@ -397,13 +464,9 @@
 
     <section>
 
-    
-
-
-
      <footer class="vcard">
       <p>This project is maintained by <a class="url fn org" href="http://dharmafly.com/">dharmafly</a></p>
-      <p>You view and download the source from GitHub <a href="https://github.com/dharmafly/elsewhere">dharmafly/elsewhere</a></p>
+      <p>View and download the source from GitHub <a href="https://github.com/dharmafly/elsewhere">dharmafly/elsewhere</a></p>
       <p class="copyright">It is open sourced under MIT licenses. See the license.txt file within the project source.</p>
     </footer>
     
