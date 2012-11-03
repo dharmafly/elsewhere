@@ -2,92 +2,478 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Elsewhere</title>
-    <style>
-    .unverified {
-      color:#CE0000;
-    }
-    .verified {
-      color:#00C900;
-    }
-    #url {
-      width:250px;
-    }
-    #prog {
-      display:none;
-    }
-    </style>
-  </head>
-  <body>
-    <h1>Elsewhere</h1>
-    <p>You can against query the server directly with default settings like so:</p>
-    <pre>http://localhost:8888/twitter.com/premasagar</pre>
-    <p>The result will be returned as JSON.</p>
-    <p>Alternatively, just enter a url below and hit enter to get a nice list of links.</p>
-    <ol id="list"></ol>
-    <input type="text" id="url" value="http://lanyrd.com/profile/chrisnewtn" />
-    <input type="checkbox" id="strict" checked />
-    <label>strict</label>
-    <progress id="prog"></progress>
+    <title>elsewhere-profiles</title>
+
+
     <script>
 
-function getGraph (e) {
-  var url    = document.getElementById('url'),
-      strict = document.getElementById('strict'),
-      prog   = document.getElementById('prog'),
-      listElem = document.getElementById('list'),
-      strict = strict.checked ? '&strict=true' : '&strict=false',
-      url    = location.href + '?url=' + encodeURIComponent(url.value) + strict,
-      xhr    = new XMLHttpRequest();
+      window.onload = function(){
 
-  prog.style.display = "block";
-  listElem.innerHTML = '';
+        var rawjson = document.getElementById('rawjson'),
+            callbackSet = document.getElementById('callbackSet');
 
-  xhr.open("GET", url, true);
-  xhr.onreadystatechange = function(event){
-    if (xhr.readyState === 4) {
-      if (xhr.status === 200) {
-        prog.style.display = "none";
-        renderGraph(JSON.parse(xhr.responseText).results);
-      } else { // fail
-        console.log(xhr.statusText);
-      }
+        rawjson.onclick = function(){
+          if(this.checked){
+            callbackSet.style.display = 'block';
+          }else{
+            callbackSet.style.display = 'none';
+          }
+        }
+
+        var apiForm = document.getElementById('form');
+        apiForm.onsubmit = getGraph;
+
+
+        function getGraph(){  
+          var url               = document.getElementById('url'),
+              callback          = document.getElementById('callback'),
+              strict            = document.getElementById('strict'),
+              useCache          = document.getElementById('useCache'),
+              crawlLimit        = document.getElementById('crawlLimit'),
+              domainLimit       = document.getElementById('domainLimit'),
+              stripDeeperLinks  = document.getElementById('stripDeeperLinks'),
+              logLevel          = document.getElementById('logLevel'),
+              rawjson           = document.getElementById('rawjson'),
+              results           = document.getElementById('results'),
+              listElem          = document.getElementById('list'),
+              warningsElem      = document.getElementById('warnings'),
+              resultNotes       = document.getElementById('result-notes'),
+              resultHeading     = document.getElementById('result-heading'),
+              queryString       = [],
+              apiUrl            = '',
+              xhr               = new XMLHttpRequest();
+
+          
+          rawjson = rawjson.checked ? true : false;
+
+          // blank results elements
+          listElem.innerHTML = '';
+          warningsElem.innerHTML = '';
+          resultNotes.innerHTML = '';    
+          resultHeading.innerHTML = 'Loading...'
+          results.style.display = 'block';
+          
+
+          if(rawjson){
+            // let the server-side return the json
+            return true;
+
+          }else{
+            // pull the json with xhr and display using the dom
+            queryString.push( 'url=' + encodeURIComponent(url.value) );
+            queryString.push( "callback=" + callback.value );
+            queryString.push( "strict=" + strict.value );
+            queryString.push( "useCache=" + useCache.value );
+            queryString.push( "crawlLimit=" + crawlLimit.value );
+            queryString.push( "domainLimit=" + domainLimit.value );
+            queryString.push( "stripDeeperLinks=" + stripDeeperLinks.value );
+            queryString.push( "logLevel=" + logLevel.value );
+
+            apiUrl = location.href + '?' + queryString.join('&');
+
+            xhr = new XMLHttpRequest();
+            //prog.style.display = "block";
+            //listElem.innerHTML = '';
+
+            xhr.open("GET", apiUrl, true);
+            xhr.onreadystatechange = function(event){
+              if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                  //prog.style.display = "none";
+                  renderGraph(JSON.parse(xhr.responseText));
+                } else { // fail
+                  console.log(xhr.statusText);
+                }
+              }
+            };
+            xhr.send(null);
+
+            return false;
+
+          }
+              
+        }
+
+
+
+        function renderGraph (data) {
+          var listElem = document.getElementById('list'),
+              warningsElem = document.getElementById('warnings'),
+              results = document.getElementById('results'),
+              resultNotes = document.getElementById('result-notes'),
+              resultHeading = document.getElementById('result-heading'),
+              listHTML = '',
+              warningsHTML = '';
+
+          resultHeading.innerHTML = 'Results';
+   
+
+          if(data.error){  
+            resultNotes.innerHTML = '<strong>' + data.error + '</strong>';
+          }else{
+            data.results.forEach(function (link) {
+              if (link === null) return;
+              listHTML += '<li><a target="_blank" title="' + 
+              link.outboundLinks.verified.join("\n") + 
+              link.outboundLinks.unverified.join("\n") + '"';
+              listHTML += ' href="' + link.url + '">';
+              listHTML += '<img src="' + link.favicon + '" width="16px" height="16px" />';
+              listHTML += '<span>' + (link.title || link.url) + '</span></a>';
+
+              if (link.verified === undefined) {
+                listHTML += '</li>';
+              } else {
+                listHTML += ' - <span class="' + (link.verified 
+                  ? 'verified">verified' 
+                  : 'unverified">unverified' ) + '</span></li>';
+              }
+
+            });
+
+            if(data.warnings){
+              data.warnings.forEach(function (text) {
+                warningsHTML += '<li>' + text + '</li>'
+              });
+            }
+
+            resultNotes.innerHTML = 'Found ' + data.results.length + ' links. Crawled ' + data.crawled + ' pages to find results.';
+            listElem.innerHTML = listHTML;
+            warningsElem.innerHTML = warningsHTML;
+          }
+
+          results.style.display = 'block';
+        }
+
+
+
     }
-  };
-  xhr.send(null);
-}
-
-function renderGraph (links) {
-  var listElem = document.getElementById('list'),
-      listHTML = "";
-
-  links.forEach(function (link) {
-    if (link === null) return;
-    listHTML += '<li><a target="_blank" title="' + 
-    link.outboundLinks.verified.join("\n") + 
-    link.outboundLinks.unverified.join("\n") + '"';
-    listHTML += ' href="view-source:' + link.url + '">';
-    listHTML += '<img src="' + link.favicon + '" width="16px" height="16px" />';
-    listHTML += (link.title || link.url) + '</a>';
-
-    if (link.verified === undefined) {
-      listHTML += '</li>';
-    } else {
-      listHTML += ' - <span class="' + (link.verified 
-        ? 'verified">verified' 
-        : 'unverified">unverified' ) + '</span></li>';
-    }
-
-    
-  });
-
-  listElem.innerHTML = listHTML;
-}
-
-document.getElementById('url').onkeydown = function (e) {
-  if (e.keyCode === 13) getGraph();
-}
 
     </script>
+
+
+
+    <style>
+      /* 1. RESET AND HTML5 SETTINGS 
+      ------------------------------*/ 
+
+      body,
+      ul,
+      ol,
+      p,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      fieldset,
+      dd {
+        margin:  0;
+        padding: 0;
+      }
+
+      article,
+      aside,
+      dialog,
+      figure,
+      figcaption,
+      footer,
+      header,
+      hgroup,
+      nav,
+      section,
+      small {
+          display: block;
+      }
+
+
+      /* 2. BASE SETTINGS 
+      --------------------------------------------*/
+
+      html {
+        background-color: #FFF;
+        color: #444;
+      }
+
+      body {
+        font-size: 100%;
+        line-height: 1.4em;
+        font-family: calibri, arial, helvetica, 'lucida grande', 'lucida sans unicode', verdana, sans-serif;
+        border-top: 0.25em solid #444;
+        padding: 3em;
+      }
+
+      h1{
+        margin: 1em 0 1em 0;
+        font-weight: normal;
+      }
+
+      h2{
+        margin-top: 2em;
+        margin-bottom: 0.5em;
+      }
+
+      input[type="text"]{
+        width: 30em;
+      }
+
+      textarea {
+        width: 30em;
+        height: 12em;
+      }
+
+      input[type="submit"]{
+        margin-top: 0.5em;
+        margin-left: 10.2em
+      }
+
+      label{
+        display: inline-block;
+        width: 8em;
+      }
+
+      .notes {
+        margin: 1em 0 1em 0;
+      }
+
+      .form-break{
+        margin-top: 2em;
+        font-weight: bold;
+      }
+
+      footer{
+        margin: 4em 0 4em 0;
+        color: #999;
+      }
+
+      a{
+        color: #999;
+      }
+
+      dt{
+        font-weight: bold;
+        margin-top: 1em;
+      }
+
+      dd{
+        margin-left: 1em;
+      }
+
+      ul{
+        list-style: none;
+        margin: 2em;
+      }
+
+      li a{
+        text-decoration: none;
+        color: #39C;
+      }
+
+      li span{
+        margin-left: 0.5em;
+        display: inline-block;
+      }
+
+      #results, #callbackSet{
+        display: none;
+      }
+
+      #description{
+        margin-top: 10em;
+      }
+
+.form {
+
+}
+
+.form input[type="text"], .form .button, .form select {
+  margin:10px auto;
+  padding:5px;
+  width:100%;
+  line-height:19px;
+  display:block;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  border:1px solid #eee;
+  border-radius:2px;
+  font-size:14px;
+  background:#fff;
+}
+
+.form input[type="text"], .form select {
+  height:31px;
+  line-height:21px;
+}
+
+.form input:hover, .form select:hover, .form .button:hover {
+  border:1px solid #888;
+}
+
+.form input:focus, .form select:focus, .form .button:active {
+  border:1px solid #0078F0;
+  box-shadow:0 0 3px #0078F0;
+  outline:none;
+}
+
+.form .button {
+  cursor:pointer;
+  text-align:center;
+  background:#f5f5f5;
+  margin:17px 0;
+}
+
+.form a.button:hover {
+  color:#000;
+}
+
+.form .button:active {
+  background:#0078F0;
+  color:#fff;
+  font-weight:bold;
+}
+
+@media (min-width:480px) {
+  .form input[type="text"], .form select {
+    width:300px;
+    margin:10px 0;
+    display:inline-block;
+  }
+
+  .form .button {
+    width:auto;
+    padding:5px 10px;
+  }
+
+  .form .button:active {
+    font-weight:normal;
+  }
+}
+
+
+    </style>
+
+  </head>
+  <body>
+    <h1>elsewhere</h1>
+
+    <p class='notes'>Just enter a url below and hit 'parse' to get a nice 
+      list of links. Alternatively, select 'raw json' and the result will 
+      be returned as JSON.</p>
+
+
+
+    <h2>API example - Finds Urls belonging to an individaul</h2>
+
+    <form class="form" id="form" method="get" action=".">
+
+      <p><label for="url">url</label>
+        <input type="text" name="url" id="url" value="http://lanyrd.com/profile/chrisnewtn" />
+      </p>
+
+      <p><label for="rawjson">raw JSON</label>
+        <input type="checkbox" name="rawjson" autocomplete="off" id="rawjson" />
+      </p>
+
+      <p id="callbackSet" style="margin-top:10px"><label for="callback">callback</label>
+        <input type="text" name="callback"  id="callback"/>
+      </p>
+
+      <input class="button" type="submit" value="Parse"/>
+
+      <p class="form-break">Options<p>
+
+
+
+      <p><label for="strict">strict</label>
+        <select name="strict" id="strict">
+          <option selected="selected" value="true">true</option>
+          <option value="false">false</option>
+        </select>
+      </p>
+
+      <p><label for="useCache">useCache</label>
+        <select name="useCache" id="useCache">
+          <option selected="selected" value="true">true</option>
+          <option value="false">false</option>
+        </select>
+      </p>
+
+      <p><label for="crawlLimit">crawlLimit</label>
+        <input type="text" value="3" name="crawlLimit" id="crawlLimit"/>
+      </p>
+
+      <p><label for="domainLimit">domainLimit</label>
+        <input type="text" value="3" name="domainLimit" id="domainLimit"/>
+      </p>
+
+      <p><label for="stripDeeperLinks">stripDeeperLinks</label>
+        <select name="stripDeeperLinks" id="stripDeeperLinks">
+          <option selected="selected" value="true">true</option>
+          <option value="false">false</option>
+        </select>
+      </p>
+
+      <p><label for="logLevel ">logLevel</label>
+        <select name="logLevel " id="logLevel">
+          <option value="1">errors (1)</option>
+          <option value="2">warnings (2)</option>
+          <option selected="selected" value="3">log (3)</option>
+          <option value="4">info (4)</option>
+        </select>
+      </p>
+
+      
+     </form>
+
+
+
+    <section id="results">
+      <h2 id="result-heading">Results</h2>
+      <ul id="list"></ul>
+      <p id="result-notes"></p>
+      <ul id="warnings"></ul>
+    </section>
+
+
+    <section id="description">
+      <h2>Options explained</h2>
+
+
+      <dl>
+
+        <dt>strict</dt>
+          <dd>Whether the crawler only allows reciprocal rel="me" links. True will give less results, but with less chance of errors.</dd>
+
+        <dt>useCache</dt>
+          <dd>Whether a request should use the cache during a request.</dd>    
+
+        <dt>crawlLimit</dt>
+          <dd>The number of links crawled in a row without any successful validations, before the crawling of any subsequent links is abandoned.</dd>
+
+        <dt>domainLimit</dt>
+          <dd>The number of links crawled within one domain, before the crawling of any subsequent links is abandoned.</dd>
+
+        <dt>stripDeeperLinks</dt>
+          <dd>If set to true then links at deeper path depths than that of the shallowest on the same domain will be discarded.</dd>
+
+        <dt>logLevel </dt>
+          <dd>The level at which the application logs results.</dd>
+
+      </dl>      
+
+
+    <section>
+
+     <footer class="vcard">
+      <p>This project is maintained by <a class="url fn org" href="http://dharmafly.com/">dharmafly</a></p>
+      <p>View and download the source from GitHub <a href="https://github.com/dharmafly/elsewhere">dharmafly/elsewhere</a></p>
+      <p class="copyright">It is open sourced under MIT licenses. See the license.txt file within the project source.</p>
+    </footer>
+    
   </body>
 </html>
+
+
+
+
+
