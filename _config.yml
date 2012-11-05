@@ -1,36 +1,36 @@
 --- 
-project_name: Elsewhere
-ga_id: UA-34978047-3
-sections: 
-- name: Overview
-  path: /index.html
-- name: Reference
-  path: /reference/index.html
-safe: false
-pygments: false
-theme: seagrass
-lsi: false
-auto: false
-version: 0.0.4
-lang: javascript
-future: true
-project_url: https://github.com/dharmafly/elsewhere
 twitter_url: https://twitter.com/dharmafly
-download_links: 
-- title: Master branch zip
-  subtext: v{{ version }}
-  href: https://github.com/dharmafly/elsewhere/zipball/master
-  text: Elsewhere
-server: false
-quote: 
-- quote: It is living and ceasing to live that are imaginary solutions. Existence is elsewhere.
-- cite: Andre Breton
+sections: 
+- path: /index.html
+  name: Overview
+- path: /reference/index.html
+  name: Reference
 exclude: 
 - README.md
 - assets
 - FiddlerRules.farx
+ga_id: UA-34978047-3
+theme: seagrass
+auto: false
+future: true
+markdown: maruku
+project_name: Elsewhere
+lang: javascript
+version: 0.0.4
 scripts: 
 - src: https://github.com/downloads/dharmafly/pablo/pablo.min.js
-markdown: maruku
-permalink: /:title
+safe: false
+pygments: false
 baseurl: /
+project_url: https://github.com/dharmafly/elsewhere
+download_links: 
+- title: Master branch zip
+  subtext: v{{ version }}
+  text: Elsewhere
+  href: https://github.com/dharmafly/elsewhere/zipball/master
+server: false
+quote: 
+- quote: It is living and ceasing to live that are imaginary solutions. Existence is elsewhere.
+- cite: Andre Breton
+permalink: /:title
+lsi: false
