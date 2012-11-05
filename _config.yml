@@ -1,36 +1,36 @@
 --- 
-scripts: 
-- src: https://github.com/downloads/dharmafly/pablo/pablo.min.js
-quote: 
-- quote: It is living and ceasing to live that are imaginary solutions. Existence is elsewhere.
-- cite: Andre Breton
-markdown: maruku
-sections: 
-- path: /index.html
-  name: Overview
-- path: /reference/index.html
-  name: Reference
-safe: false
-server: false
-baseurl: /
-project_url: https://github.com/dharmafly/elsewhere
-auto: false
 project_name: Elsewhere
 ga_id: UA-34978047-3
+sections: 
+- name: Overview
+  path: /index.html
+- name: Reference
+  path: /reference/index.html
+safe: false
+pygments: false
+theme: seagrass
+lsi: false
+auto: false
+version: 0.0.4
+lang: javascript
+future: true
+project_url: https://github.com/dharmafly/elsewhere
+twitter_url: https://twitter.com/dharmafly
 download_links: 
 - title: Master branch zip
   subtext: v{{ version }}
   href: https://github.com/dharmafly/elsewhere/zipball/master
   text: Elsewhere
-pygments: false
-lang: javascript
+server: false
+quote: 
+- quote: It is living and ceasing to live that are imaginary solutions. Existence is elsewhere.
+- cite: Andre Breton
 exclude: 
 - README.md
 - assets
 - FiddlerRules.farx
-theme: seagrass
-version: 0.0.4
-future: true
+scripts: 
+- src: https://github.com/downloads/dharmafly/pablo/pablo.min.js
+markdown: maruku
 permalink: /:title
-twitter_url: https://twitter.com/dharmafly
-lsi: false
+baseurl: /
