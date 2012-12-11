@@ -23,6 +23,10 @@
         var apiForm = document.getElementById('form');
         apiForm.onsubmit = getGraph;
 
+        // Reset the window scroll position, then move to the results section
+        window.location.hash = '';
+        window.location.hash = '#results';
+        
 
         function getGraph(){  
           var url               = document.getElementById('url'),
