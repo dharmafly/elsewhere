@@ -10,7 +10,10 @@
       window.onload = function(){
 
         var rawjson = document.getElementById('rawjson'),
-            callbackSet = document.getElementById('callbackSet');
+            callbackSet = document.getElementById('callbackSet'),
+            apiForm = document.getElementById('form'),
+            location = window.location,
+            apiUrlBase = location.protocol + '//' + location.host;
 
         rawjson.onclick = function(){
           if(this.checked){
@@ -20,12 +23,11 @@
           }
         }
 
-        var apiForm = document.getElementById('form');
         apiForm.onsubmit = getGraph;
 
         // Reset the window scroll position, then move to the results section
-        window.location.hash = '';
-        window.location.hash = '#results';
+        location.hash = '';
+        location.hash = '#results';
         
 
         function getGraph(){  
@@ -73,7 +75,7 @@
             queryString.push( "stripDeeperLinks=" + stripDeeperLinks.value );
             queryString.push( "logLevel=" + logLevel.value );
 
-            apiUrl = location.href + '?' + queryString.join('&');
+            apiUrl = apiUrlBase + '?' + queryString.join('&');
 
             xhr = new XMLHttpRequest();
             //prog.style.display = "block";
