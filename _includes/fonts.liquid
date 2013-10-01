@@ -1,8 +1,8 @@
 <script type="text/javascript">
-    WebFontConfig = {
+    var WebFontConfig = {
         custom: { 
           families: [
-              'Lato:400,700,400italic:latin',
+              'Open+Sans:400,600:latin',
               {% case site.theme %} 
               {% when 'ocean' %}'Advent+Pro::latin',
               {% when 'horus' %}'Megrim::latin',
@@ -13,7 +13,7 @@
               {% endcase %} 'Ubuntu+Mono::latin'
           ],
           urls: [ 
-            '{{ relative_path }}/css/fonts/{{ site.theme }}.css'
+            '/css/fonts/{{ site.theme }}.css'
           ] 
         }
     };

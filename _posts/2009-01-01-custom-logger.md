@@ -1,15 +1,16 @@
---- 
-heading: Custom logger
+---
 category: reference
+heading: Custom logger
+path: reference
 ---
 
-Elsewhere use a simple logging system that writes to Node's console. You can replace the logger with your own, for example, to store warnings and errors in a database or log file. To add your own custom logger, all you need to do is provide an object contain the following interface:
+Elsewhere uses a simple logging system that writes to Node's console. You can replace the logger with your own, for example, to store warnings and errors in a database or log file. To add your own custom logger, all you need to do is provide an object with the following interface:
 
-	{
-	    function info (message) { /* code to pass on message */ }
-	    function log  (message) { /* code to pass on message */ }
-	    function warn (message) { /* code to pass on message */ }
-	    function error(message) { /* code to pass on message */ }
-	}
+  	{
+      info:  function (message) { /* code to pass on message */ },
+      log:   function (message) { /* code to pass on message */ },
+      warn:  function (message) { /* code to pass on message */ },
+      error: function (message) { /* code to pass on message */ }
+    }
 
-and then add this interface to the `logger` property of the options object passed into the `graph()` method.
+You must then add this object to the `logger` property of the options object passed into the `graph()` method.

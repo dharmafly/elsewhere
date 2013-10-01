@@ -1,6 +1,7 @@
---- 
-heading: Requiring Elsewhere
+---
 category: reference
+heading: Requiring Elsewhere
+path: reference
 ---
 
 Elsewhere is available on [NPM][npm]. To install it, run:

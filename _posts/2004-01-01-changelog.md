@@ -1,6 +1,7 @@
---- 
-heading: Changelog
+---
 category: overview
+heading: Changelog
+path: overview
 ---
 
 * v0.0.4

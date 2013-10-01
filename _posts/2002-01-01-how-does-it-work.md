@@ -1,19 +1,24 @@
---- 
-heading: How does it work?
+---
 category: overview
+heading: "How does it work?"
+path: overview
 ---
 
-Elsewhere crawls the web page at the supplied URL and looks for links that contain the attribute [`rel=me`][rel=me]:
+To use Elsewhere, simply provide it with a URL. Elsewhere will use this target as the entry point to the graph and will search it for links that contain the attribute [`rel=me`][rel=me]:
 
     <a href="http://dharmafly.com" rel="me">Dharmafly</a>
 
-The `rel=me` attribute is a microformat to assert that the link is to a website, page or resource that is owned by (or is about) the same person that at the target URL. For example, if the target URL is a person's Twitter profile page, then that page may contain a link to the person's home page or main website.
+The `rel=me` attribute is a microformat to assert that the link is to a website, page or resource that is owned by (or is about) the same person as the page the link is on. 
 
-The URLs in the `rel=me` links are then crawled for further `rel=me` links and so on, building a comprehensive graph along the way.
+For example, if you've given Elsewhere a URL that's a Twitter profile, they usually contain a link to that person or company's webpage; this link has the `rel=me` microformat.
 
-For example, a person's Twitter profile page may link to his or her home page, which then links to the person's Last.fm, Flickr, Facebook, GitHub, LinkedIn and Google+ profiles, as well as the person's company website. The information in the graph is all public, having been added by the person when they created their social media profiles and web pages.
+When Elsewhere finds a `rel=me` link or links at a URL, it searches each of them for more, building a comprehensive graph along the way.
 
-Once Elsewhere has run out of `rel=me` links to crawl, it returns the list of URLs it has found, representing the person's 'social graph'.
+For example, a person's Twitter profile page may link to his or her home page, which in turn links to their Last.fm, Flickr, Facebook, GitHub, LinkedIn, Google+ profiles etc. 
+
+Elsewhere can only search public profiles and webpages for links. If a page isn't public, Elsewhere can't search it for links. It's also worth noting that profile owners deliberately place these links on their profiles to make them discoverable. If the profile owner has neglected to place a link there, Elsewhere won't find one. 
+
+Once Elsewhere has run out of new `rel=me` links to search, it returns a list of all the URLs it has found. This list is what is referred to as the 'social graph', the owner of which being the owner of the URL you initially gave Elsewhere.
 
 
 ## Strict Mode and verified links
