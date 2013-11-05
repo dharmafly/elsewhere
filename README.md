@@ -98,7 +98,9 @@ Once you have it installed, you can [require()][require] it and interact with it
 
 **[See elsewherejs.com][elsewhere] for full documentation.**
 
-
+[socialgraph]: http://en.wikipedia.org/wiki/Social_graph
+[twitter-profile]: https://twitter.com/dharmafly
+[google-social-graph-api]: https://developers.google.com/social-graph/
 [elsewhere]: http://elsewherejs.com
 [node]: http://nodejs.org
 [rel=me]: http://microformats.org/wiki/rel-me
