@@ -17,7 +17,7 @@ Now head to [`localhost:8888`][localhost]. You can test the API on this page by 
 
 You can also test the API by simply appending the target URL to your address bar like so:
 
-    http://localhost:8888/?url=chrisnewtn.com
+    http://localhost:8888/?url=http://chrisnewtn.com
 
 This will return a JSON version of the graph e.g.
 

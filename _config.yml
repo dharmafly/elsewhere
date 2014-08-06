@@ -1,7 +1,7 @@
 ---
 project_name: Elsewhere
 project_url: "https://github.com/dharmafly/elsewhere"
-version: 0.0.5
+version: 0.0.4
 jquery_no_conflict: true
 theme: seagrass
 twitter_url: "https://twitter.com/dharmafly"
@@ -27,8 +27,8 @@ sections:
 safe: false
 future: true
 lsi: false
-pygments: false
-markdown: maruku
+highlighter: pygments
+markdown: kramdown
 permalink: "/:title"
 baseurl: /
 exclude: 
