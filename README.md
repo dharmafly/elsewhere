@@ -5,6 +5,8 @@ Elsewhere
 
 Elsewhere can be set up as a web service, providing a JSON API that can be easily queried over a network. It can also be included as a Node module and used directly within a server-side project.
 
+Try the Elsewhere explorer at [example.elsewherejs.com][explorer]
+
 
 ## How does it work?
 
@@ -107,3 +109,4 @@ Once you have it installed, you can [require()][require] it and interact with it
 [_deferred]: https://npmjs.org/package/underscore.deferred
 [npm]: https://npmjs.org/package/elsewhere
 [require]: http://nodejs.org/api/globals.html#globals_require
+[explorer]: http://example.elsewherejs.com

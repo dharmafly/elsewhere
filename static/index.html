@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>elsewhere-profiles</title>
+    <title>Elsewhere explorer</title>
 
 
     <script>
@@ -26,8 +26,10 @@
         apiForm.onsubmit = getGraph;
 
         // Reset the window scroll position, then move to the results section
-        location.hash = '';
-        location.hash = '#results';
+        window.setTimeout(function(){
+          location.hash = '';
+          location.hash = '#results';
+        }, 1000);
         
 
         function getGraph(){  
@@ -56,7 +58,7 @@
           listElem.innerHTML = '';
           warningsElem.innerHTML = '';
           resultNotes.innerHTML = '';    
-          resultHeading.innerHTML = 'Loading...'
+          resultHeading.innerHTML = 'Loading... (may take a while)'
           results.style.display = 'block';
           
 
@@ -148,10 +150,11 @@
           }
 
           results.style.display = 'block';
+
+          // Set scroll to results
+          location.hash = '';
+          location.hash = '#results';
         }
-
-
-
     }
 
     </script>
@@ -243,7 +246,7 @@
       }
 
       .form-break{
-        margin-top: 2em;
+        margin-top: 3em;
         font-weight: bold;
       }
 
@@ -280,12 +283,12 @@
         display: inline-block;
       }
 
-      #results, #callbackSet{
+      #results {
         display: none;
       }
 
       #description{
-        margin-top: 10em;
+        margin-top: 6em;
       }
 
 .form {
@@ -312,13 +315,15 @@
 }
 
 .form input:hover, .form select:hover, .form .button:hover {
-  border:1px solid #888;
+  border:1px solid #4c9ed9;
 }
 
 .form input:focus, .form select:focus, .form .button:active {
-  border:1px solid #0078F0;
+  border:1px solid #4c9ed9;
   box-shadow:0 0 3px #0078F0;
   outline:none;
+  background:#4c9ed9;
+  color:#fff;
 }
 
 .form .button {
@@ -368,7 +373,7 @@
 
 
 
-    <h2>API example - Finds Urls belonging to an individual</h2>
+    <h2>Enter a start URL and click 'Search'</h2>
 
     <form class="form" id="form" method="get" action=".">
 
@@ -376,19 +381,9 @@
         <input type="text" name="url" id="url" value="http://lanyrd.com/profile/chrisnewtn" />
       </p>
 
-      <p><label for="rawjson">raw JSON</label>
-        <input type="checkbox" name="rawjson" autocomplete="off" id="rawjson" />
-      </p>
-
-      <p id="callbackSet" style="margin-top:10px"><label for="callback">callback</label>
-        <input type="text" name="callback"  id="callback"/>
-      </p>
-
-      <input class="button" type="submit" value="Parse"/>
+      <input class="button" type="submit" value="Search"/>
 
       <p class="form-break">Options<p>
-
-
 
       <p><label for="strict">strict</label>
         <select name="strict" id="strict">
@@ -428,6 +423,14 @@
         </select>
       </p>
 
+      <p><label for="rawjson" style="margin-top:10px">raw JSON</label>
+        <input type="checkbox" name="rawjson" autocomplete="off" id="rawjson" />
+      </p>
+
+      <p id="callbackSet" style="margin-top:10px"><label for="callback">callback</label>
+        <input type="text" name="callback"  id="callback"/>
+      </p>
+
       
      </form>
 
@@ -462,8 +465,14 @@
         <dt>stripDeeperLinks</dt>
           <dd>If set to true then links at deeper path depths than that of the shallowest on the same domain will be discarded.</dd>
 
-        <dt>logLevel </dt>
+        <dt>logLevel</dt>
           <dd>The level at which the application logs results.</dd>
+
+        <dt>raw JSON</dt>
+          <dd>Give the results as a JSON data document.</dd>
+
+        <dt>callback</dt>
+          <dd>When using `raw JSON`, this gives a name for the callback function, to allow cross-domain JSONP.</dd>
 
       </dl>      
 
@@ -478,8 +487,3 @@
     
   </body>
 </html>
-
-
-
-
-
