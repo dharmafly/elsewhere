@@ -11,8 +11,8 @@ scripts:
   - src: "https://github.com/downloads/dharmafly/pablo/pablo.min.js"
 stylesheets: null
 quote: 
-  - quote: It is living and ceasing to live that are imaginary solutions. Existence is elsewhere.
-  - cite: Andre Breton
+  quote: It is living and ceasing to live that are imaginary solutions. Existence is elsewhere.
+  cite: Andre Breton
 ga_id: "UA-34978047-3"
 download_links: 
   - text: Elsewhere
