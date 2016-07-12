@@ -927,6 +927,7 @@ aside.icons li  span,
 .buttons .badge span {
   width: 50px;
   height: 0em;
+  text-indent: -999em;
   border: 7px solid {{ page.content_hover_colour }};
   border-radius: 50px;
   padding-top: 50px;
