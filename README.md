@@ -5,14 +5,12 @@ Elsewhere
 
 Elsewhere can be set up as a web service, providing a JSON API that can be easily queried over a network. It can also be included as a Node module and used directly within a server-side project.
 
-Try the Elsewhere explorer at [example.elsewherejs.com][explorer]
-
 
 ## How does it work?
 
 Elsewhere crawls the web page at the supplied URL and looks for links that contain the attribute [`rel=me`][rel=me]:
 
-    <a href="http://dharmafly.com" rel="me">Dharmafly</a>
+    <a href="https://dharmafly.com" rel="me">Dharmafly</a>
 
 The `rel=me` attribute is a microformat to assert that the link is to a website, page or resource that is owned by (or is about) the same person that at the target URL. For example, if the target URL is a person's Twitter profile page, then that page may contain a link to the person's home page or main website.
 
@@ -56,7 +54,7 @@ The JSON returned looks like this:
     {
       results: [
         {
-          url: "http://chrisnewtn.com",
+          url: "https://chrisnewtn.com",
           title: "Chris Newton",
           favicon: "http://chrisnewtn.com/favicon.ico",
           outboundLinks: {
@@ -70,7 +68,7 @@ The JSON returned looks like this:
           verified: true
         }
       ],
-      query: "http://chrisnewtn.com",
+      query: "https://chrisnewtn.com",
       created: "2012-10-12T16:30:57.270Z",
       crawled: 9,
       verified: 9
@@ -91,22 +89,21 @@ Once you have it installed, you can [require()][require] it and interact with it
 
     var elsewhere = require('elsewhere');
 
-    elsewhere.graph('http://premasagar.com').then(function (err, graph) {
+    elsewhere.graph('https://premasagar.com').then(function (err, graph) {
         res.end(graph);
     });
 
 
 ## elsewherejs.com
 
-**[See elsewherejs.com][elsewhere] for full documentation.**
+**[See elsewhere.dharmafly.com][elsewhere] for full documentation.**
 
-[socialgraph]: http://en.wikipedia.org/wiki/Social_graph
+[socialgraph]: https://en.wikipedia.org/wiki/Social_graph
 [twitter-profile]: https://twitter.com/dharmafly
 [google-social-graph-api]: https://developers.google.com/social-graph/
-[elsewhere]: http://elsewherejs.com
-[node]: http://nodejs.org
-[rel=me]: http://microformats.org/wiki/rel-me
+[elsewhere]: https://elsewhere.dharmafly.com
+[node]: https://nodejs.org
+[rel=me]: https://microformats.org/wiki/rel-me
 [_deferred]: https://npmjs.org/package/underscore.deferred
 [npm]: https://npmjs.org/package/elsewhere
-[require]: http://nodejs.org/api/globals.html#globals_require
-[explorer]: http://example.elsewherejs.com
+[require]: https://nodejs.org/api/globals.html#globals_require
